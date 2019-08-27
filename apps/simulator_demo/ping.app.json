@@ -1,0 +1,27 @@
+{
+  "name": "ping",
+  "modules": [
+    "//apps/tutorials/ping:ping_components"
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "name": "ping",
+        "components": [
+          {
+            "name": "ping",
+            "type": "isaac::Ping"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "config": {
+    "ping" : {
+      "ping" : {
+        "tick_period" : "1Hz"
+      }
+    }
+  }
+}

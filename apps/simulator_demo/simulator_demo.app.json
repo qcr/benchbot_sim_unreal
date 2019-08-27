@@ -1,0 +1,17 @@
+{
+  "name": "simulator_demo",
+  "graph": {
+    "nodes": [
+      {
+        "name": "ping_components",
+        "components": [
+          {
+            "name": "ping",
+            "type": "isaac:Pinger"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  }
+}
