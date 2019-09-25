@@ -9,4 +9,4 @@ namespace isaac {
     // LOG_INFO(get_message().c_str());
     LOG_INFO("Hello world!");
   }
-} // namespace bb
+} // namespace isaac

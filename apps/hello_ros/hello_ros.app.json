@@ -1,0 +1,25 @@
+{
+  "name": "hello_ros",
+  "modules": ["//apps/hello_ros:ping_ros"],
+  "graph": {
+    "nodes": [
+      {
+        "name": "ping_ros",
+        "components": [
+          {
+            "name": "ping_ros",
+            "type": "isaac::RosPinger"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "config": {
+    "ping_ros": {
+      "ping_ros": {
+        "tick_period": "1Hz"
+      }
+    }
+  }
+}

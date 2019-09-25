@@ -2,7 +2,7 @@
 # TODO pull paths out into environment variables
 workspace(name = "benchbot_simulator")
 
-local_repository(name = "com_nvidia_isaac", path = "/home/ben/opt/isaac_2019-2")
+local_repository(name = "com_nvidia_isaac", path = "/home/ben/opt/isaac_sdk")
 
 load("@com_nvidia_isaac//third_party:engine.bzl", "isaac_engine_workspace")
 load("@com_nvidia_isaac//third_party:packages.bzl", "isaac_packages_workspace")

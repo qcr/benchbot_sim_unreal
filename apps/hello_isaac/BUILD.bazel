@@ -11,11 +11,3 @@ isaac_app(
     name = "hello_isaac",
     modules = ["//apps/hello_isaac:ping_isaac"]
     )
-
-
-# cc_binary(
-#     name = "hello_isaac",
-#     srcs = ["hello_isaac.cc"],
-#     deps = ["@com_google_absl//absl/strings"]
-#     )
-

@@ -1,0 +1,14 @@
+load("@com_nvidia_isaac//engine/build:isaac.bzl", "isaac_app", "isaac_cc_module")
+
+isaac_cc_module(
+    name = "ping_ros",
+    srcs = ["RosPinger.cc"],
+    hdrs = ["RosPinger.hh"],
+    visibility = ["//visibility:public"],
+    deps = ["@ros"]
+    )
+
+isaac_app(
+    name = "hello_ros",
+    modules = ["//apps/hello_ros:ping_ros"]
+    )

@@ -1,0 +1,10 @@
+cc_library(
+    name = "ros",
+    srcs = glob(["lib/*.so*"]),
+    hdrs = glob([
+        "include/**/*.h",
+        "include/**/*.hpp",
+        ]),
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
+    )
