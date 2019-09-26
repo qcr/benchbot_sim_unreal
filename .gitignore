@@ -2,3 +2,8 @@
 
 compile_commands.json
 bazel-*
+
+ros
+!ros/BUILD.bazel
+!ros/package_list
+!ros/build_packages.bash

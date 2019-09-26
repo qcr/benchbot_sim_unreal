@@ -5,7 +5,7 @@ isaac_cc_module(
     srcs = ["RosPinger.cc"],
     hdrs = ["RosPinger.hh"],
     visibility = ["//visibility:public"],
-    deps = ["@ros"]
+    deps = ["//ros:ros"]
     )
 
 isaac_app(

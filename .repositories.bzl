@@ -1,13 +1,13 @@
 load("@com_nvidia_isaac//engine/build:isaac.bzl", "isaac_http_archive", "isaac_new_http_archive", "isaac_new_local_repository")
 
 def benchbot_simulator_workspace():
-  isaac_new_local_repository(
-      name = "ros",
-      # path = "/opt/ros/melodic",
-      path = "/home/ben/tmp/ros_debug",
-      build_file = "//ros:BUILD.bazel",
-      licenses = ["https://docs.ros.org/diamondback/api/licenses.html"]
-      )
+  # isaac_new_local_repository(
+  #     name = "ros",
+  #     # path = "/opt/ros/melodic",
+  #     path = "/home/ben/tmp/ros_debug",
+  #     build_file = "//ros:BUILD.bazel",
+  #     licenses = ["https://docs.ros.org/diamondback/api/licenses.html"]
+  #     )
 
   isaac_http_archive(
       name = "com_google_absl",

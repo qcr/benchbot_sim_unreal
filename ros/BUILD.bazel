@@ -6,5 +6,15 @@ cc_library(
         "include/**/*.hpp",
         ]),
     strip_include_prefix = "include",
+    data = [":ros_built.files"],
     visibility = ["//visibility:public"],
+    )
+
+genrule(
+    name = "ros_build",
+    local = True,
+    srcs = [":package_list"],
+    outs = ["ros_built.files"],
+    tools = [":build_packages.bash"],
+    cmd = "$(location :build_packages.bash) $< $@ $$(dirname $(location :package_list))"
     )
