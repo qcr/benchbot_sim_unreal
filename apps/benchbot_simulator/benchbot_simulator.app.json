@@ -1,0 +1,50 @@
+{
+  "name": "benchbot_simulator",
+  "modules": [
+    "external/com_nvidia_isaac/packages/map",
+    "external/com_nvidia_isaac/packages/navigation",
+    "external/com_nvidia_isaac/packages/perception",
+    "external/com_nvidia_isaac/packages/planner",
+    "external/com_nvidia_isaac/packages/viewers",
+    "external/com_nvidia_isaac/packages/flatsim",
+    "//apps/benchbot_simulator:twist_subscriber"
+  ],
+  "config_files": [
+    "external/com_nvidia_isaac/apps/carter/carter_sim/carter.config.json",
+    "external/com_nvidia_isaac/apps/carter/carter_sim/navigation.config.json"
+  ],
+  "graph_files": [
+    "external/com_nvidia_isaac/apps/carter/carter_sim/carter.graph.json",
+    "external/com_nvidia_isaac/apps/carter/carter_sim/navigation.graph.json"
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "name": "twist_subscriber",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "twist_subscriber",
+            "type": "benchbot::TwistSubscriber"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "twist_subscriber/twist_subscriber/base_cmd",
+        "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_command"
+      }
+    ]
+  },
+  "config": {
+    "twist_subscriber": {
+      "twist_subscriber": {
+        "tick_period": "30Hz"
+      }
+    }
+  }
+}

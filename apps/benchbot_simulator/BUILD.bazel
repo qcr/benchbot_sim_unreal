@@ -1,0 +1,30 @@
+load("@com_nvidia_isaac//engine/build:isaac.bzl", "isaac_app", "isaac_cc_module", "isaac_pkg")
+
+isaac_cc_module(
+    name = "twist_subscriber",
+    srcs = ["TwistSubscriber.cc"],
+    hdrs = ["TwistSubscriber.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        "@com_nvidia_isaac//messages/state:differential_base",
+        "@com_nvidia_isaac//engine/gems/state:io"
+        ]
+    )
+
+isaac_app(
+    name = "benchbot_simulator",
+    data = [
+        "@com_nvidia_isaac//apps/assets/maps",
+        "@com_nvidia_isaac//packages/map:libmap_module.so",
+        "@com_nvidia_isaac//apps/carter/carter_sim:carter_public_files"
+        ],
+    modules = [
+        "//apps/benchbot_simulator:twist_subscriber",
+        "@com_nvidia_isaac//packages/navigation",
+        "@com_nvidia_isaac//packages/perception",
+        "@com_nvidia_isaac//packages/planner",
+        "@com_nvidia_isaac//packages/viewers",
+        "@com_nvidia_isaac//packages/flatsim"
+        ]
+    )
