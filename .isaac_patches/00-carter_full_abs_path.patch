@@ -1,0 +1,10 @@
+diff '--exclude=bazel-*' '--exclude=unity' '--exclude=*warehouse_p*' '--exclude=BUILD' -Naur /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/bridge_config/carter_full.json ./apps/carter/carter_sim/bridge_config/carter_full.json
+--- /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/bridge_config/carter_full.json	2019-06-25 10:03:39.000000000 +1000
++++ ./apps/carter/carter_sim/bridge_config/carter_full.json	2019-09-19 14:27:46.667850339 +1000
+@@ -1,4 +1,4 @@
+ {
+-  "graphs": ["carter_full_graph.json"],
+-  "configs": ["carter_full_config.json"]
++  "graphs": ["/home/ben/opt/isaac_sdk/apps/carter/carter_sim/bridge_config/carter_full_graph.json"],
++  "configs": ["/home/ben/opt/isaac_sdk/apps/carter/carter_sim/bridge_config/carter_full_config.json"]
+ }

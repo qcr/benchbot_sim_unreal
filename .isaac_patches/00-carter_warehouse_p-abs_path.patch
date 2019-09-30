@@ -1,0 +1,12 @@
+diff '--exclude=bazel-*' '--exclude=unity' '--exclude=*full*' '--exclude=BUILD' -Naur /home/ben/tmp/isaac_sdk_clean/apps/assets/maps/carter_warehouse_p.config.json ./apps/assets/maps/carter_warehouse_p.config.json
+--- /home/ben/tmp/isaac_sdk_clean/apps/assets/maps/carter_warehouse_p.config.json	2019-06-25 10:03:39.000000000 +1000
++++ ./apps/assets/maps/carter_warehouse_p.config.json	2019-10-01 08:04:40.990160226 +1000
+@@ -2,7 +2,7 @@
+   "map": {
+     "occupancy": {
+       "cell_size": 0.1,
+-      "filename": "apps/assets/maps/carter_warehouse_p.png"
++      "filename": "/home/ben/opt/isaac_sdk/apps/assets/maps/carter_warehouse_p.png"
+     },
+     "waypoints": {
+       "vis_cell_size": 0.1,
