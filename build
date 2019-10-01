@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# NOTE: this build script is meant to be used EXACTLY the same as bazel. All it
+# does is allows us to control the manually built ROS part with using the Bazel
+# build system
+
+# WHY NOT JUST USE BAZEL AS IS:
+# TL;DR answer: ROS really doesn't play well with Bazel at all
+# More details: Bazel REALLY doesn't like the idea of introducing output file
+# lists that aren't determined at analysis time, or running an arbitrary check
+# script to see what needs to be rebuilt; so this was the lesser of evils
+# including having a build that isn't guaranteed to always work, integrating
+# ROS's catkin_make with bazel (ew...), or figuring out why using the local ROS
+# install as a "local_repository" causes SEGFAULTS
+
+# Settings
+REQUIRED_PACKAGE_LIST="ros/required_packages"
+BUILT_PACKAGES_FILENAME="built_packages"
+
+BAZEL="bazel"
+ROS_BUILD_TARGET="//ros:build"
+
+function is_ros_built() {
+  built="$1"
+  required="$2"
+  [ -f "$built" ] && cmp --silent "$required" "$built"
+}
+
+# Build ROS if we need (probably doesn't need to be Bazel anymore... but we
+# came so far just for Bazel not to want to play ball)
+built_package_list="$(bazel info | grep '^bazel-genfiles:' | awk '{print $2}')/ros/$BUILT_PACKAGES_FILENAME"
+if ! is_ros_built "$built_package_list" "$REQUIRED_PACKAGE_LIST"; then 
+  echo "ROS_BUILD_OUTDATED: the required & built package lists do not match:"
+  echo -e "\t./${REQUIRED_PACKAGE_LIST}"
+  echo -e "\t${built_package_list}"
+  echo -e "\nROS_BUILD_OUTDATED: Using bazel to rebuild ROS packages...\n"
+  "$BAZEL" build "$ROS_BUILD_TARGET"
+  if ! is_ros_built "$built_package_list" "$REQUIRED_PACKAGE_LIST"; then
+    echo -e "\nROS_BUILD_OUTDATED: required & built package lists still do not match"
+    echo "ROS_BUILD_OUTDATED: Building of ROS failed. Exiting"
+  fi
+fi
+
+# Run Bazel exactly like normal with all of the arguments passed in
+echo -e "\nROS_BUILD_VALID: ROS build is up to date. Moving on...\n"
+"$BAZEL" "$@"

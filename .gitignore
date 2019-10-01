@@ -5,5 +5,5 @@ bazel-*
 
 ros
 !ros/BUILD.bazel
-!ros/package_list
-!ros/build_packages.bash
+!ros/required_packages
+!ros/build.bash

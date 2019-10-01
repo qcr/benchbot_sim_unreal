@@ -6,15 +6,15 @@ cc_library(
         "include/**/*.hpp",
         ]),
     strip_include_prefix = "include",
-    data = [":ros_built.files"],
+    data = [":built_packages"],
     visibility = ["//visibility:public"],
     )
 
 genrule(
-    name = "ros_build",
+    name = "build",
     local = True,
-    srcs = [":package_list"],
-    outs = ["ros_built.files"],
-    tools = [":build_packages.bash"],
-    cmd = "$(location :build_packages.bash) $< $@ $$(dirname $(location :package_list))"
+    srcs = [":required_packages"],
+    outs = ["built_packages"],
+    tools = [":build.bash"],
+    cmd = "$(location :build.bash) $< $@ $$(dirname $(location :required_packages))"
     )
