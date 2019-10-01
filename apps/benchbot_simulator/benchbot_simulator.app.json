@@ -1,21 +1,19 @@
 {
   "name": "benchbot_simulator",
   "modules": [
+    "apps/benchbot_simulator:twist_subscriber",
     "external/com_nvidia_isaac/packages/map",
     "external/com_nvidia_isaac/packages/navigation",
     "external/com_nvidia_isaac/packages/perception",
     "external/com_nvidia_isaac/packages/planner",
     "external/com_nvidia_isaac/packages/viewers",
-    "external/com_nvidia_isaac/packages/flatsim",
-    "//apps/benchbot_simulator:twist_subscriber"
+    "external/com_nvidia_isaac/packages/flatsim"
   ],
   "config_files": [
-    "external/com_nvidia_isaac/apps/carter/carter_sim/carter.config.json",
-    "external/com_nvidia_isaac/apps/carter/carter_sim/navigation.config.json"
+    "apps/benchbot_simulator/carter_benchbot.config.json"
   ],
   "graph_files": [
-    "external/com_nvidia_isaac/apps/carter/carter_sim/carter.graph.json",
-    "external/com_nvidia_isaac/apps/carter/carter_sim/navigation.graph.json"
+    "apps/benchbot_simulator/carter_benchbot.graph.json"
   ],
   "graph": {
     "nodes": [

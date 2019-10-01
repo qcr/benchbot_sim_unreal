@@ -1,0 +1,275 @@
+{
+  "shared_robot_model": {
+    "DifferentialBaseModel": {
+      "robot_radius": 0.5,
+      "base_length": 0.534,
+      "wheel_radius": 0.24
+    }
+  },
+  "robot_pose_initializer": {
+    "initial_pose": {
+      "lhs_frame": "world",
+      "rhs_frame": "robot_init",
+      "pose": [1, 0.0, 0.0, 0, 0, 0.0, 0.0],
+      "attach_interactive_marker": true
+    }
+  },
+  "base_simulation": {
+    "isaac.flatsim.DifferentialBaseSimulator": {
+      "flip_left_wheel": true,
+      "flip_right_wheel": true,
+      "joint_name_left_wheel": "left_wheel",
+      "joint_name_right_wheel": "right_wheel",
+      "tick_period": "100Hz"
+    },
+    "isaac.alice.Failsafe": {
+      "name": "carter"
+    }
+  },
+  "scan_accumulator": {
+    "isaac.perception.ScanAccumulator": {
+      "min_slice_count": 900,
+      "clock_wise_rotation": false
+    }
+  },
+  "range_scan_flattening": {
+    "isaac.perception.RangeScanFlattening": {
+      "height_min": -0.47,
+      "height_max": 1.0,
+      "pitch_fudge": 0.005
+    }
+  },
+  "localize": {
+    "isaac.navigation.LocalizeBehavior": {
+      "local_score_threshold": 0.1
+    }
+  },
+  "LeftColorCameraViewer": {
+    "isaac.viewers.ColorCameraViewer": {
+      "target_fps": 15,
+      "reduce_scale": 2,
+      "camera_name": "left_camera"
+    }
+  },
+  "LeftDetectionsViewer": {
+    "isaac.viewers.DetectionsViewer": {
+      "reduce_scale": 2
+    }
+  },
+  "LeftDepthCameraViewer": {
+    "isaac.viewers.DepthCameraViewer": {
+      "target_fps": 15,
+      "reduce_scale": 2,
+      "camera_name": "left_camera"
+    }
+  },
+  "LeftSegmentationCameraViewer": {
+    "isaac.viewers.SegmentationCameraViewer": {
+      "target_fps": 15,
+      "reduce_scale": 2,
+      "camera_name": "left_camera"
+    }
+  },
+  "RightColorCameraViewer": {
+    "isaac.viewers.ColorCameraViewer": {
+      "target_fps": 15,
+      "reduce_scale": 2,
+      "camera_name": "right_camera"
+    }
+  },
+  "LidarSubscriber": {
+    "lidar_initializer": {
+      "lhs_frame": "robot",
+      "rhs_frame": "lidar",
+      "pose": [1.0, 0.0, 0.0, 0.0, -0.06, 0.0, 0.62]
+    },
+    "isaac.alice.TcpSubscriber": {
+      "port": 5000,
+      "host": "localhost"
+    }
+  },
+  "RigidBodySubscriber": {
+    "isaac.alice.TcpSubscriber": {
+      "port": 5001,
+      "host": "localhost"
+    }
+  },
+  "ActuatorPublisher": {
+    "isaac.alice.TcpPublisher": {
+      "port": 5002,
+      "host": "localhost"
+    }
+  },
+  "LeftCameraSubscriber": {
+    "left_camera_initializer": {
+      "lhs_frame": "robot",
+      "rhs_frame": "left_camera",
+      "pose": [0.5, -0.5, 0.5, -0.5, 0.11, 0.06, 0.55]
+    },
+    "isaac.alice.TcpSubscriber": {
+      "port": 5003,
+      "host": "localhost"
+    }
+  },
+  "RightCameraSubscriber": {
+    "right_camera_initializer": {
+      "lhs_frame": "robot",
+      "rhs_frame": "right_camera",
+      "pose": [0.5, -0.5, 0.5, -0.5, 0.11, -0.06, 0.55]
+    },
+    "isaac.alice.TcpSubscriber": {
+      "port": 5004,
+      "host": "localhost"
+    }
+  },
+  "recorder": {
+    "isaac.alice.Recorder": {
+      "base_directory": "/tmp/isaac",
+      "enabled": false
+    }
+  },
+  "recorder_bridge": {
+    "RecorderBridge": {
+      "recorder_component_name": "recorder/isaac.alice.Recorder",
+      "tick_period": "1.0"
+    }
+  },
+  "websight": {
+    "WebsightServer": {
+      "port": 3000,
+      "assetroot": "external/isaac_assets",
+      "ui_config": {
+        "windows": {
+          "Carter Sim - Local View": {
+            "renderer": "2d",
+            "dims": {
+              "width": 256,
+              "height": 256
+            },
+            "channels": [
+              {
+                "name": "carter_sim/local_map/isaac.navigation.LocalMap/local_map",
+                "active": true
+              },
+              {
+                "name": "carter_sim/global_plan/isaac.planner.GlobalPlanner/target",
+                "active": true
+              },
+              {
+                "name": "carter_sim/global_plan_smoother/smoother/smooth_plan.path",
+                "active": true
+              },
+              {
+                "name": "carter_sim/lqr/isaac.planner.DifferentialBaseLqrPlanner/plan",
+                "active": true
+              }
+            ]
+          },
+          "Carter Sim - Localization": {
+            "renderer": "2d",
+            "dims": {
+              "width": 432,
+              "height": 548
+            },
+            "channels": [
+              {
+                "name": "carter_sim/map/occupancy/map",
+                "active": true
+              },
+              {
+                "name": "carter_sim/global_plan/isaac.planner.GlobalPlanner/target",
+                "active": true
+              },
+              {
+                "name": "carter_sim/global_plan_smoother/smoother/smooth_plan.path",
+                "active": true
+              },
+              {
+                "name": "carter_sim/scan_localization/flatscan_viewer/beam_lines",
+                "active": true
+              },
+              {
+                "name": "carter_sim/scan_localization/flatscan_viewer/beam_endpoints",
+                "active": true
+              },
+              {
+                "name": "carter_sim/scan_localization/isaac.navigation.ParticleFilterLocalization/particles",
+                "active": true
+              }
+            ]
+          },
+          "Carter Sim - Left Color": {
+            "renderer": "2d",
+            "dims": {
+              "width": 480,
+              "height": 270
+            },
+            "channels": [
+              {
+                "name": "carter_sim/LeftColorCameraViewer/isaac.viewers.ColorCameraViewer/Color",
+                "active": true
+              },
+              {
+                "name": "carter_sim/LeftDetectionsViewer/isaac.viewers.DetectionsViewer/detections",
+                "active": true
+              }
+            ]
+          },
+          "Carter Sim - Left Depth": {
+            "renderer": "2d",
+            "dims": {
+              "width": 480,
+              "height": 270
+            },
+            "channels": [
+              {
+                "name": "carter_sim/LeftDepthCameraViewer/isaac.viewers.DepthCameraViewer/Depth",
+                "active": true
+              }
+            ]
+          },
+          "Carter Sim - Left Segmentation": {
+            "renderer": "2d",
+            "dims": {
+              "width": 480,
+              "height": 270
+            },
+            "channels": [
+              {
+                "name": "carter_sim/LeftSegmentationCameraViewer/isaac.viewers.SegmentationCameraViewer/Instances",
+                "active": false
+              },
+              {
+                "name": "carter_sim/LeftSegmentationCameraViewer/isaac.viewers.SegmentationCameraViewer/Classes",
+                "active": true
+              }
+            ]
+          },
+          "Carter Sim - Right Color": {
+            "renderer": "2d",
+            "dims": {
+              "width": 480,
+              "height": 270
+            },
+            "channels": [
+              {
+                "name": "carter_sim/RightColorCameraViewer/isaac.viewers.ColorCameraViewer/Color",
+                "active": true
+              }
+            ]
+          }
+        },
+        "assets": {
+          "carter": {
+            "obj": "apps/assets/carter.obj",
+            "diffuse_map": "apps/assets/carter_albido.png",
+            "normal_map": "apps/assets/carter_normal.png",
+            "rotation": [-0.5, -0.5, 0.5, 0.5],
+            "scale": 0.01
+          }
+        }
+      }
+    }
+  }
+}
+

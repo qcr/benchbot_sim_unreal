@@ -15,6 +15,8 @@ isaac_cc_module(
 isaac_app(
     name = "benchbot_simulator",
     data = [
+        ":carter_benchbot.graph.json",
+        ":carter_benchbot.config.json",
         "@com_nvidia_isaac//apps/assets/maps",
         "@com_nvidia_isaac//packages/map:libmap_module.so",
         "@com_nvidia_isaac//apps/carter/carter_sim:carter_public_files"
