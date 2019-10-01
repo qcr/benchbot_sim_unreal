@@ -1,0 +1,24 @@
+diff '--exclude=bazel-*' '--exclude=unity' -Naur /home/ben/tmp/isaac_sdk_clean/apps/assets/maps/hospital.config.json ./apps/assets/maps/hospital.config.json
+--- /home/ben/tmp/isaac_sdk_clean/apps/assets/maps/hospital.config.json	2019-07-24 09:43:39.000000000 +1000
++++ ./apps/assets/maps/hospital.config.json	2019-10-01 14:20:59.134377994 +1000
+@@ -7,7 +7,7 @@
+   "map": {
+     "occupancy": {
+       "cell_size": 0.1,
+-      "filename": "apps/assets/maps/hospital.png"
++      "filename": "/home/ben/opt/isaac_sdk/apps/assets/maps/hospital.png"
+     },
+     "waypoints": {
+       "vis_cell_size": 0.1,
+diff '--exclude=bazel-*' '--exclude=unity' -Naur /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/bridge_config/carter_full_config.json ./apps/carter/carter_sim/bridge_config/carter_full_config.json
+--- /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/bridge_config/carter_full_config.json	2019-06-25 10:03:39.000000000 +1000
++++ ./apps/carter/carter_sim/bridge_config/carter_full_config.json	2019-10-01 14:22:36.819645886 +1000
+@@ -5,7 +5,7 @@
+         {
+           "name": "carter_1",
+           "reference": "Blueprint'/Game/Carter/VehicleRigs/Pawn_Carter_FirstPerson.Pawn_Carter_FirstPerson'",
+-          "pose": [1, 0, 0, 0, -11.01, 63.47, 0.92]
++          "pose": [1, 0, 0, 0, 0.0, -11.0, 0.9]
+         }
+       ]
+     },
