@@ -1,6 +1,7 @@
 {
   "name": "benchbot_simulator",
   "modules": [
+    "apps/benchbot_simulator:rgb_publisher",
     "apps/benchbot_simulator:twist_subscriber",
     "external/com_nvidia_isaac/packages/map",
     "external/com_nvidia_isaac/packages/navigation",
@@ -29,12 +30,29 @@
             "type": "benchbot::TwistSubscriber"
           }
         ]
+      },
+      {
+        "name": "rgb_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "rgb_publisher",
+            "type": "benchbot::RgbPublisher"
+          }
+        ]
       }
     ],
     "edges": [
       {
-        "source": "twist_subscriber/twist_subscriber/base_cmd",
+        "source": "twist_subscriber/twist_subscriber/cmd_vel",
         "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_command"
+      },
+      {
+        "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/ColorSensor",
+        "target": "rgb_publisher/rgb_publisher/camera_rgb"
       }
     ]
   },

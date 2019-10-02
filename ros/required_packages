@@ -2,3 +2,4 @@ roscpp
 std_msgs
 geometry_msgs
 image_transport
+cv_bridge

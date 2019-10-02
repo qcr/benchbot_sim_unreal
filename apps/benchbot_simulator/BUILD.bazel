@@ -12,6 +12,17 @@ isaac_cc_module(
         ]
     )
 
+isaac_cc_module(
+    name = "rgb_publisher",
+    srcs = ["RgbPublisher.cc"],
+    hdrs = ["RgbPublisher.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        "@com_nvidia_isaac//messages/state:differential_base"
+        ]
+    )
+
 isaac_app(
     name = "benchbot_simulator",
     data = [
@@ -22,6 +33,7 @@ isaac_app(
         "@com_nvidia_isaac//apps/carter/carter_sim:carter_public_files"
         ],
     modules = [
+        "//apps/benchbot_simulator:rgb_publisher",
         "//apps/benchbot_simulator:twist_subscriber",
         "@com_nvidia_isaac//packages/navigation",
         "@com_nvidia_isaac//packages/perception",

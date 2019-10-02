@@ -12,16 +12,16 @@ namespace benchbot {
 
 class TwistSubscriber : public isaac::alice::Codelet {
  public:
-  TwistSubscriber();
-  virtual ~TwistSubscriber();
+  TwistSubscriber() {}
+  virtual ~TwistSubscriber() {}
 
   void start() override;
   void stop() override;
   void tick() override;
 
-  ISAAC_PARAM(std::string, subscriber_channel_name, "/cmd_vel");
+  ISAAC_PARAM(std::string, twist_channel_name, "/cmd_vel");
 
-  ISAAC_PROTO_TX(StateProto, base_cmd);
+  ISAAC_PROTO_TX(StateProto, cmd_vel);
 
  private:
   void callbackTwist(const geometry_msgs::Twist &msg);
