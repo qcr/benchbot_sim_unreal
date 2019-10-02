@@ -1,14 +1,12 @@
 load("@com_nvidia_isaac//engine/build:isaac.bzl", "isaac_app", "isaac_cc_module", "isaac_pkg")
 
 isaac_cc_module(
-    name = "twist_subscriber",
-    srcs = ["TwistSubscriber.cc"],
-    hdrs = ["TwistSubscriber.hh"],
+    name = "depth_publisher",
+    srcs = ["DepthPublisher.cc"],
+    hdrs = ["DepthPublisher.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
-        "@com_nvidia_isaac//messages/state:differential_base",
-        "@com_nvidia_isaac//engine/gems/state:io"
         ]
     )
 
@@ -19,7 +17,18 @@ isaac_cc_module(
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
-        "@com_nvidia_isaac//messages/state:differential_base"
+        ]
+    )
+
+isaac_cc_module(
+    name = "twist_subscriber",
+    srcs = ["TwistSubscriber.cc"],
+    hdrs = ["TwistSubscriber.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        "@com_nvidia_isaac//messages/state:differential_base",
+        "@com_nvidia_isaac//engine/gems/state:io"
         ]
     )
 
@@ -33,6 +42,7 @@ isaac_app(
         "@com_nvidia_isaac//apps/carter/carter_sim:carter_public_files"
         ],
     modules = [
+        "//apps/benchbot_simulator:depth_publisher",
         "//apps/benchbot_simulator:rgb_publisher",
         "//apps/benchbot_simulator:twist_subscriber",
         "@com_nvidia_isaac//packages/navigation",

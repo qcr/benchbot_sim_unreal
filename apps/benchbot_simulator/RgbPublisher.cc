@@ -47,7 +47,7 @@ void RgbPublisher::tick() {
     isaac::ImageConstView3ub rgb_isaac;
     if (!FromProto(rgb_proto.getImage(), rx_camera_rgb().buffers(),
                    rgb_isaac)) {
-      LOG_ERROR("Failed to get an image from the proto");
+      LOG_ERROR("Failed to get an RGB image from the proto");
     }
 
     // Use OpenCv to get an image that ROS will understand
