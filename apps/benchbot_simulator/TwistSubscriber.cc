@@ -43,7 +43,7 @@ void TwistSubscriber::tick() {
 }
 
 void TwistSubscriber::callbackTwist(const geometry_msgs::Twist &msg) {
-  LOG_DEBUG("Received Twist from ROS; passing to Isaac SIM");
+  // LOG_DEBUG("Received Twist from ROS; passing to Isaac SIM");
 
   // Form a Isaac message from the input twist message
   isaac::messages::DifferentialBaseControl imsg;

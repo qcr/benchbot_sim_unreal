@@ -37,7 +37,7 @@ void RgbPublisher::stop() {
 
 void RgbPublisher::tick() {
   if (ros::ok()) {
-    LOG_DEBUG("Received RGB from Isaac; passing to ROS");
+    // LOG_DEBUG("Received RGB from Isaac; passing to ROS");
 
     // Received a message, cache time ASAP
     ros::Time msg_time = ros::Time::now();

@@ -1,9 +1,12 @@
 #pragma once
 
+#include <memory>
+
 #include "engine/alice/alice.hpp"
 #include "messages/messages.hpp"
 
 namespace benchbot {
+
 class DepthPublisher : public isaac::alice::Codelet {
  public:
   DepthPublisher() {}

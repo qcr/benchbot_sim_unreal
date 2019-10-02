@@ -17,7 +17,7 @@ void DepthPublisher::start() {
   // Start a ROS node & delegate SIGINT handling to Isaac
   ros::M_string args;
   if (!ros::isInitialized()) {
-    ros::init(args, "rgb_publisher", ros::init_options::NoSigintHandler);
+    ros::init(args, "depth_publisher", ros::init_options::NoSigintHandler);
   }
   //
   // Initialise all of the ROS data we are going to need
@@ -37,7 +37,7 @@ void DepthPublisher::stop() {
 
 void DepthPublisher::tick() {
   if (ros::ok()) {
-    LOG_DEBUG("Received Depth from Isaac; passing to ROS");
+    // LOG_DEBUG("Received Depth from Isaac; passing to ROS");
 
     // Received a message, cache time ASAP
     ros::Time msg_time = ros::Time::now();

@@ -21,6 +21,16 @@ isaac_cc_module(
     )
 
 isaac_cc_module(
+    name = "tf_publisher",
+    srcs = ["TfPublisher.cc"],
+    hdrs = ["TfPublisher.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
     name = "twist_subscriber",
     srcs = ["TwistSubscriber.cc"],
     hdrs = ["TwistSubscriber.hh"],
@@ -44,6 +54,7 @@ isaac_app(
     modules = [
         "//apps/benchbot_simulator:depth_publisher",
         "//apps/benchbot_simulator:rgb_publisher",
+        "//apps/benchbot_simulator:tf_publisher",
         "//apps/benchbot_simulator:twist_subscriber",
         "@com_nvidia_isaac//packages/navigation",
         "@com_nvidia_isaac//packages/perception",

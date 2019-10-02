@@ -3,6 +3,7 @@
   "modules": [
     "apps/benchbot_simulator:depth_publisher",
     "apps/benchbot_simulator:rgb_publisher",
+    "apps/benchbot_simulator:tf_publisher",
     "apps/benchbot_simulator:twist_subscriber",
     "external/com_nvidia_isaac/packages/map",
     "external/com_nvidia_isaac/packages/navigation",
@@ -46,6 +47,19 @@
         ]
       },
       {
+        "name": "tf_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "tf_publisher",
+            "type": "benchbot::TfPublisher"
+          }
+        ]
+      },
+      {
         "name": "twist_subscriber",
         "components": [
           {
@@ -75,6 +89,14 @@
     ]
   },
   "config": {
+    "tf_publisher": {
+      "tf_publisher": {
+        "tick_period": "1Hz",
+        "tf_base_frame": "robot",
+        "tf_static_frames": ["lidar", "left_camera", "right_camera"],
+        "tf_dynamic_frames": ["world", "map", "robot_init"]
+      }
+    },
     "twist_subscriber": {
       "twist_subscriber": {
         "tick_period": "30Hz"
