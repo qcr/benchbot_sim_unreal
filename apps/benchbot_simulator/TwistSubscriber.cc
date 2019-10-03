@@ -48,7 +48,7 @@ void TwistSubscriber::callbackTwist(const geometry_msgs::Twist &msg) {
   // Form a Isaac message from the input twist message
   isaac::messages::DifferentialBaseControl imsg;
   imsg.linear_speed() = msg.linear.x;  // WTF is that magic syntax? Interesting
-  imsg.angular_speed() = msg.angular.x;
+  imsg.angular_speed() = msg.angular.z;
 
   ToProto(imsg, tx_cmd_vel().initProto(), tx_cmd_vel().buffers());
   tx_cmd_vel().publish();
