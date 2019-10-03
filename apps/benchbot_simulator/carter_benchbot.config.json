@@ -137,67 +137,10 @@
   "websight": {
     "WebsightServer": {
       "port": 3000,
-      "assetroot": "external/isaac_assets",
+      "webroot": "external/com_nvidia_isaac/packages/sight/webroot",
+      "assetroot": "../isaac_assets",
       "ui_config": {
         "windows": {
-          "Carter Sim - Local View": {
-            "renderer": "2d",
-            "dims": {
-              "width": 256,
-              "height": 256
-            },
-            "channels": [
-              {
-                "name": "carter_sim/local_map/isaac.navigation.LocalMap/local_map",
-                "active": true
-              },
-              {
-                "name": "carter_sim/global_plan/isaac.planner.GlobalPlanner/target",
-                "active": true
-              },
-              {
-                "name": "carter_sim/global_plan_smoother/smoother/smooth_plan.path",
-                "active": true
-              },
-              {
-                "name": "carter_sim/lqr/isaac.planner.DifferentialBaseLqrPlanner/plan",
-                "active": true
-              }
-            ]
-          },
-          "Carter Sim - Localization": {
-            "renderer": "2d",
-            "dims": {
-              "width": 432,
-              "height": 548
-            },
-            "channels": [
-              {
-                "name": "carter_sim/map/occupancy/map",
-                "active": true
-              },
-              {
-                "name": "carter_sim/global_plan/isaac.planner.GlobalPlanner/target",
-                "active": true
-              },
-              {
-                "name": "carter_sim/global_plan_smoother/smoother/smooth_plan.path",
-                "active": true
-              },
-              {
-                "name": "carter_sim/scan_localization/flatscan_viewer/beam_lines",
-                "active": true
-              },
-              {
-                "name": "carter_sim/scan_localization/flatscan_viewer/beam_endpoints",
-                "active": true
-              },
-              {
-                "name": "carter_sim/scan_localization/isaac.navigation.ParticleFilterLocalization/particles",
-                "active": true
-              }
-            ]
-          },
           "Carter Sim - Left Color": {
             "renderer": "2d",
             "dims": {

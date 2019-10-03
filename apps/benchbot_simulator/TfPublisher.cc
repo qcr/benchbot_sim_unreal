@@ -47,7 +47,7 @@ void TfPublisher::tick() {
 
     // Get all of the static tfs that have not already been published
     for (const std::string &s : get_tf_static_frames()) {
-      LOG_INFO("Getting static tf for: %s", s.c_str());
+      // LOG_INFO("Getting static tf for: %s", s.c_str());
       robot_to_frame =
           node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
       if (robot_to_frame) {
@@ -59,7 +59,7 @@ void TfPublisher::tick() {
 
     // Get all of the dynamic tfs
     for (const std::string &s : get_tf_dynamic_frames()) {
-      LOG_INFO("Getting dynamic tf for: %s", s.c_str());
+      // LOG_INFO("Getting dynamic tf for: %s", s.c_str());
       robot_to_frame =
           node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
       if (robot_to_frame) {
@@ -67,7 +67,7 @@ void TfPublisher::tick() {
             tf::StampedTransform(_pose3d_to_transform(*robot_to_frame),
                                  ros_time, get_tf_base_frame(), s));
       } else {
-        LOG_ERROR("Failed to find tf for: %s", s.c_str());
+        // LOG_ERROR("Failed to find tf for: %s", s.c_str());
       }
     }
   } else {
