@@ -247,6 +247,19 @@
           "type": "isaac::planner::SphericalRobotShapeComponent"
         }
       ]
+    },
+    {
+      "name": "segway_odometry",
+      "components": [
+        {
+          "name": "message_ledger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.navigation.DifferentialBaseOdometry",
+          "type": "isaac::navigation::DifferentialBaseOdometry"
+        }
+      ]
     }
   ],
   "edges": [
@@ -301,6 +314,11 @@
     {
       "source": "recorder_bridge/RecorderBridge/reply",
       "target": "websight/WebsightServer/recorder_reply"
+    },
+    {
+      "source": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_state",
+      "target": "segway_odometry/isaac.navigation.DifferentialBaseOdometry/state"
     }
+
   ]
 }

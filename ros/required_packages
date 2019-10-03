@@ -1,6 +1,7 @@
-roscpp
-std_msgs
+cv_bridge
 geometry_msgs
 image_transport
-cv_bridge
+nav_msgs
+roscpp
+std_msgs
 tf

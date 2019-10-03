@@ -1,6 +1,5 @@
 #include "TfPublisher.hh"
 
-#include "ros/callback_queue.h"
 #include "ros/ros.h"
 #include "tf/transform_broadcaster.h"
 
@@ -21,8 +20,7 @@ void TfPublisher::start() {
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
 
-  // Configure the codelet to only tick when we receive a new camera message
-  // from the simulator
+  // Configure the codelet to tick periodically
   tickPeriodically();
 }
 
@@ -46,7 +44,7 @@ void TfPublisher::tick() {
     ros::Time ros_time = ros::Time::now();
 
     // Get all requested tfs
-    for (const std::string &s : get_tf_static_frames()) {
+    for (const std::string &s : get_tf_frames()) {
       robot_to_frame =
           node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
       if (robot_to_frame) {

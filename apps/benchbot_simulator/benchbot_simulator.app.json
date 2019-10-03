@@ -2,6 +2,7 @@
   "name": "benchbot_simulator",
   "modules": [
     "apps/benchbot_simulator:depth_publisher",
+    "apps/benchbot_simulator:odom_publisher",
     "apps/benchbot_simulator:rgb_publisher",
     "apps/benchbot_simulator:tf_publisher",
     "apps/benchbot_simulator:twist_subscriber",
@@ -30,6 +31,19 @@
           {
             "name": "depth_publisher",
             "type": "benchbot::DepthPublisher"
+          }
+        ]
+      },
+      {
+        "name": "odom_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "odom_publisher",
+            "type": "benchbot::OdomPublisher"
           }
         ]
       },
@@ -85,13 +99,17 @@
       {
         "source": "twist_subscriber/twist_subscriber/cmd_vel",
         "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_command"
+      },
+      {
+        "source": "segway_odometry/isaac.navigation.DifferentialBaseOdometry/odometry",
+        "target": "odom_publisher/odom_publisher/robot_odom"
       }
     ]
   },
   "config": {
     "tf_publisher": {
       "tf_publisher": {
-        "tick_period": "1Hz",
+        "tick_period": "30Hz",
         "tf_base_frame": "robot",
         "tf_frames": ["lidar", "left_camera", "right_camera"]
       }
