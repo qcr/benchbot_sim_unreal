@@ -28,7 +28,7 @@ void TfPublisher::start() {
 
 void TfPublisher::stop() { ros_data_ = nullptr; }
 
-tf::Transform _pose3d_to_transform(const isaac::Pose3d &pose) {
+inline tf::Transform _pose3d_to_transform(const isaac::Pose3d &pose) {
   return tf::Transform(tf::Quaternion(pose.rotation.quaternion().w(),
                                       pose.rotation.quaternion().x(),
                                       pose.rotation.quaternion().y(),
@@ -45,29 +45,16 @@ void TfPublisher::tick() {
     std::optional<isaac::Pose3d> robot_to_frame;
     ros::Time ros_time = ros::Time::now();
 
-    // Get all of the static tfs that have not already been published
+    // Get all requested tfs
     for (const std::string &s : get_tf_static_frames()) {
-      // LOG_INFO("Getting static tf for: %s", s.c_str());
       robot_to_frame =
           node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
       if (robot_to_frame) {
         ros_data_->tf_broadcaster.sendTransform(
             tf::StampedTransform(_pose3d_to_transform(*robot_to_frame),
                                  ros_time, get_tf_base_frame(), s));
-      }
-    }
-
-    // Get all of the dynamic tfs
-    for (const std::string &s : get_tf_dynamic_frames()) {
-      // LOG_INFO("Getting dynamic tf for: %s", s.c_str());
-      robot_to_frame =
-          node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
-      if (robot_to_frame) {
-        ros_data_->tf_broadcaster.sendTransform(
-            tf::StampedTransform(_pose3d_to_transform(*robot_to_frame),
-                                 ros_time, get_tf_base_frame(), s));
-      } else {
-        // LOG_ERROR("Failed to find tf for: %s", s.c_str());
+        // LOG_DEBUG("Published tf for: %s -> %s", get_tf_base_frame().c_str(),
+        //           s.c_str());
       }
     }
   } else {

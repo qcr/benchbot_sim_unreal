@@ -93,8 +93,7 @@
       "tf_publisher": {
         "tick_period": "1Hz",
         "tf_base_frame": "robot",
-        "tf_static_frames": ["lidar", "left_camera", "right_camera"],
-        "tf_dynamic_frames": ["world", "map", "robot_init"]
+        "tf_frames": ["lidar", "left_camera", "right_camera"]
       }
     },
     "twist_subscriber": {
