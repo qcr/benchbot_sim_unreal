@@ -1,0 +1,31 @@
+#pragma once
+
+#include <memory>
+
+#include "engine/alice/alice.hpp"
+#include "messages/messages.hpp"
+
+namespace benchbot {
+
+class LidarPublisher : public isaac::alice::Codelet {
+ public:
+  LidarPublisher() {}
+  virtual ~LidarPublisher() {}
+
+  void start() override;
+  void stop() override;
+  void tick() override;
+
+  ISAAC_PARAM(std::string, lidar_channel_name, "/scan_laser");
+  ISAAC_PARAM(std::string, lidar_frame_name, "lidar");
+
+  ISAAC_PROTO_RX(RangeScanProto, lidar_scan);
+
+ private:
+  struct RosData;
+  std::unique_ptr<RosData> ros_data_;
+};
+
+}  // namespace benchbot
+
+ISAAC_ALICE_REGISTER_CODELET(benchbot::LidarPublisher);

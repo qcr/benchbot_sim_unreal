@@ -2,6 +2,7 @@
   "name": "benchbot_simulator",
   "modules": [
     "apps/benchbot_simulator:depth_publisher",
+    "apps/benchbot_simulator:lidar_publisher",
     "apps/benchbot_simulator:odom_publisher",
     "apps/benchbot_simulator:rgb_publisher",
     "apps/benchbot_simulator:tf_publisher",
@@ -31,6 +32,19 @@
           {
             "name": "depth_publisher",
             "type": "benchbot::DepthPublisher"
+          }
+        ]
+      },
+      {
+        "name": "lidar_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "lidar_publisher",
+            "type": "benchbot::LidarPublisher"
           }
         ]
       },
@@ -103,6 +117,10 @@
       {
         "source": "segway_odometry/isaac.navigation.DifferentialBaseOdometry/odometry",
         "target": "odom_publisher/odom_publisher/robot_odom"
+      },
+      {
+        "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
+        "target": "lidar_publisher/lidar_publisher/lidar_scan"
       }
     ]
   },

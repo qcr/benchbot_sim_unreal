@@ -11,6 +11,16 @@ isaac_cc_module(
     )
 
 isaac_cc_module(
+    name = "lidar_publisher",
+    srcs = ["LidarPublisher.cc"],
+    hdrs = ["LidarPublisher.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
     name = "odom_publisher",
     srcs = ["OdomPublisher.cc"],
     hdrs = ["OdomPublisher.hh"],
@@ -63,6 +73,7 @@ isaac_app(
         ],
     modules = [
         "//apps/benchbot_simulator:depth_publisher",
+        "//apps/benchbot_simulator:lidar_publisher",
         "//apps/benchbot_simulator:odom_publisher",
         "//apps/benchbot_simulator:rgb_publisher",
         "//apps/benchbot_simulator:tf_publisher",
