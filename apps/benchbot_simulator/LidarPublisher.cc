@@ -40,31 +40,31 @@ void LidarPublisher::tick() {
     // LOG_DEBUG("Received RGB from Isaac; passing to ROS");
 
     // Received a message, cache time ASAP
-    ros::Time msg_time = ros::Time::now();
+    // ros::Time msg_time = ros::Time::now();
 
     // Turn the Isaac message into a ROS message
-    auto lidar_proto = rx_lidar_scan().getProto();
-    std::ofstream o;
-    o.open("/tmp/lidar/" + std::to_string(msg_time.toSec()) + ".txt");
-    o << "Range Denormaliser: " << lidar_proto.getRangeDenormalizer()
-      << std::endl;
-    o << "Intensity Denormaliser: " << lidar_proto.getIntensityDenormalizer()
-      << std::endl;
-    o << "Delta Time: " << lidar_proto.getDeltaTime() << std::endl;
-    o << "Invalid Threshold: " << lidar_proto.getInvalidRangeThreshold()
-      << std::endl;
-    o << "Out of Threshold: " << lidar_proto.getOutOfRangeThreshold()
-      << std::endl;
-    o << "Rays (range, intensity): " << std::endl;
-    for (auto const &r : lidar_proto.getRays())
-      o << '\t' << r.getRange() << ',' << int(r.getIntensity()) << std::endl;
-    o << "Thetas: " << std::endl;
-    for (auto const &t : lidar_proto.getTheta()) o << '\t' << t << std::endl;
-    o << "Phis: " << std::endl;
-    for (auto const &p : lidar_proto.getPhi()) o << '\t' << p << std::endl;
-    o.close();
+    // TODO figure this out...
+    // auto lidar_proto = rx_lidar_scan().getProto();
+    // std::ofstream o;
+    // o.open("/tmp/lidar/" + std::to_string(msg_time.toSec()) + ".txt");
+    // o << "Range Denormaliser: " << lidar_proto.getRangeDenormalizer()
+    //   << std::endl;
+    // o << "Intensity Denormaliser: " << lidar_proto.getIntensityDenormalizer()
+    //   << std::endl;
+    // o << "Delta Time: " << lidar_proto.getDeltaTime() << std::endl;
+    // o << "Invalid Threshold: " << lidar_proto.getInvalidRangeThreshold()
+    //   << std::endl;
+    // o << "Out of Threshold: " << lidar_proto.getOutOfRangeThreshold()
+    //   << std::endl;
+    // o << "Rays (range, intensity): " << std::endl;
+    // for (auto const &r : lidar_proto.getRays())
+    //   o << '\t' << r.getRange() << ',' << int(r.getIntensity()) << std::endl;
+    // o << "Thetas: " << std::endl;
+    // for (auto const &t : lidar_proto.getTheta()) o << '\t' << t << std::endl;
+    // o << "Phis: " << std::endl;
+    // for (auto const &p : lidar_proto.getPhi()) o << '\t' << p << std::endl;
+    // o.close();
 
-    // TODO header
   } else {
     LOG_ERROR("Lost connection to ROS master; should shut down");
   }

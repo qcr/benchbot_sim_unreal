@@ -26,6 +26,16 @@ function is_ros_built() {
   [ -f "$built" ] && cmp --silent "$required" "$built"
 }
 
+# Bazel.... you've worn me down... I don't like this but you make it so
+# difficult to do simple things (i.e. write a setup where the location of the
+# Isaac SDK can vary between machines...)
+if [ -z "$ISAAC_SDK_PATH" ]; then
+  echo "ISAAC_SDK_PATH must be set for the simulator to link to Isaac SDK."
+  echo "Please set the environment variable, & rerun the script. Exiting"
+  exit 1
+fi
+ln -svf "$ISAAC_SDK_PATH" .isaac_sdk
+
 # Build ROS if we need (probably doesn't need to be Bazel anymore... but we
 # came so far just for Bazel not to want to play ball)
 built_package_list="$(bazel info | grep '^bazel-genfiles:' | awk '{print $2}')/ros/$BUILT_PACKAGES_FILENAME"
@@ -38,6 +48,7 @@ if ! is_ros_built "$built_package_list" "$REQUIRED_PACKAGE_LIST"; then
   if ! is_ros_built "$built_package_list" "$REQUIRED_PACKAGE_LIST"; then
     echo -e "\nROS_BUILD_OUTDATED: required & built package lists still do not match"
     echo "ROS_BUILD_OUTDATED: Building of ROS failed. Exiting"
+    exit 1
   fi
 fi
 
