@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+
+if [ -z "$ISAAC_SDK_PATH" ]; then
+  echo "ISAAC_SDK_PATH must be set to correctly patch the Isaac SDK."
+  echo "Please set the environment variable, & rerun the script. Exiting"
+  exit 1
+fi
+
+# This is gross... I'm sorry...
+PATCHER_PATH="$(realpath $(dirname $0))"
+PATCH_ISAAC_PATH="/home/ben/opt/isaac_sdk"
+pushd "$ISAAC_SDK_PATH"
+for p in ${PATCHER_PATH}/*.patch; do
+  cat "$p" | sed -e "3,\$s|${PATCH_ISAAC_PATH}|${ISAAC_SDK_PATH}|g" | patch -p0
+done
