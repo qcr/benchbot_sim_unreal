@@ -34,7 +34,7 @@ if [ -z "$ISAAC_SDK_PATH" ]; then
   echo "Please set the environment variable, & rerun the script. Exiting"
   exit 1
 fi
-ln -svf "$ISAAC_SDK_PATH" .isaac_sdk
+sed -i "s|\(local_repository(name = \"com_nvidia_isaac\", path = \"\).*\(\")\)|\1${ISAAC_SDK_PATH}\2|" WORKSPACE
 
 # Build ROS if we need (probably doesn't need to be Bazel anymore... but we
 # came so far just for Bazel not to want to play ball)
