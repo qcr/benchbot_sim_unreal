@@ -2,8 +2,8 @@ load("@com_nvidia_isaac//engine/build:isaac.bzl", "isaac_app", "isaac_cc_module"
 
 isaac_cc_module(
     name = "depth_publisher",
-    srcs = ["DepthPublisher.cc"],
-    hdrs = ["DepthPublisher.hh"],
+    srcs = ["depth_publisher.cc"],
+    hdrs = ["depth_publisher.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -12,8 +12,8 @@ isaac_cc_module(
 
 isaac_cc_module(
     name = "localisation_publisher",
-    srcs = ["LocalisationPublisher.cc"],
-    hdrs = ["LocalisationPublisher.hh", "helpers.hh"],
+    srcs = ["localisation_publisher.cc"],
+    hdrs = ["localisation_publisher.hh", "helpers.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -22,8 +22,8 @@ isaac_cc_module(
 
 isaac_cc_module(
     name = "lidar_publisher",
-    srcs = ["LidarPublisher.cc"],
-    hdrs = ["LidarPublisher.hh"],
+    srcs = ["lidar_publisher.cc"],
+    hdrs = ["lidar_publisher.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -32,8 +32,8 @@ isaac_cc_module(
 
 isaac_cc_module(
     name = "odom_publisher",
-    srcs = ["OdomPublisher.cc"],
-    hdrs = ["OdomPublisher.hh"],
+    srcs = ["odom_publisher.cc"],
+    hdrs = ["odom_publisher.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -42,8 +42,8 @@ isaac_cc_module(
 
 isaac_cc_module(
     name = "rgb_publisher",
-    srcs = ["RgbPublisher.cc"],
-    hdrs = ["RgbPublisher.hh"],
+    srcs = ["rgb_publisher.cc"],
+    hdrs = ["rgb_publisher.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -52,8 +52,8 @@ isaac_cc_module(
 
 isaac_cc_module(
     name = "tf_publisher",
-    srcs = ["TfPublisher.cc"],
-    hdrs = ["TfPublisher.hh", "helpers.hh"],
+    srcs = ["tf_publisher.cc"],
+    hdrs = ["tf_publisher.hh", "helpers.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -62,8 +62,8 @@ isaac_cc_module(
 
 isaac_cc_module(
     name = "twist_subscriber",
-    srcs = ["TwistSubscriber.cc"],
-    hdrs = ["TwistSubscriber.hh"],
+    srcs = ["twist_subscriber.cc"],
+    hdrs = ["twist_subscriber.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",

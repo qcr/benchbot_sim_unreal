@@ -1,4 +1,4 @@
-#include "OdomPublisher.hh"
+#include "odom_publisher.hh"
 
 #include "nav_msgs/Odometry.h"
 #include "ros/ros.h"

@@ -1,4 +1,4 @@
-#include "LidarPublisher.hh"
+#include "lidar_publisher.hh"
 
 #include <algorithm>
 #include <fstream>
