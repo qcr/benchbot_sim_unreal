@@ -23,7 +23,7 @@ void OdomPublisher::start() {
   if (!ros::isInitialized()) {
     ros::init(args, "odom_publisher", ros::init_options::NoSigintHandler);
   }
-  //
+
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
   ros_data_->pub =

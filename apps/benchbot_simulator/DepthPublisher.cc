@@ -19,7 +19,7 @@ void DepthPublisher::start() {
   if (!ros::isInitialized()) {
     ros::init(args, "depth_publisher", ros::init_options::NoSigintHandler);
   }
-  //
+
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
   ros_data_->it = image_transport::ImageTransport(ros_data_->nh);

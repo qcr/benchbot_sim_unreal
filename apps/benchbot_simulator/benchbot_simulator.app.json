@@ -2,6 +2,7 @@
   "name": "benchbot_simulator",
   "modules": [
     "apps/benchbot_simulator:depth_publisher",
+    "apps/benchbot_simulator:localisation_publisher",
     "apps/benchbot_simulator:lidar_publisher",
     "apps/benchbot_simulator:odom_publisher",
     "apps/benchbot_simulator:rgb_publisher",
@@ -32,6 +33,19 @@
           {
             "name": "depth_publisher",
             "type": "benchbot::DepthPublisher"
+          }
+        ]
+      },
+      {
+        "name": "localisation_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "localisation_publisher",
+            "type": "benchbot::LocalisationPublisher"
           }
         ]
       },
@@ -125,6 +139,11 @@
     ]
   },
   "config": {
+    "localisation_publisher": {
+      "localisation_publisher": {
+        "tick_period": "30Hz"
+      }
+    },
     "tf_publisher": {
       "tf_publisher": {
         "tick_period": "30Hz",

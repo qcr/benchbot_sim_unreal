@@ -11,6 +11,16 @@ isaac_cc_module(
     )
 
 isaac_cc_module(
+    name = "localisation_publisher",
+    srcs = ["LocalisationPublisher.cc"],
+    hdrs = ["LocalisationPublisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
     name = "lidar_publisher",
     srcs = ["LidarPublisher.cc"],
     hdrs = ["LidarPublisher.hh"],
@@ -43,7 +53,7 @@ isaac_cc_module(
 isaac_cc_module(
     name = "tf_publisher",
     srcs = ["TfPublisher.cc"],
-    hdrs = ["TfPublisher.hh"],
+    hdrs = ["TfPublisher.hh", "helpers.hh"],
     visibility = ["//visibility:public"],
     deps = [
         "//ros:ros",
@@ -73,6 +83,7 @@ isaac_app(
         ],
     modules = [
         "//apps/benchbot_simulator:depth_publisher",
+        "//apps/benchbot_simulator:localisation_publisher",
         "//apps/benchbot_simulator:lidar_publisher",
         "//apps/benchbot_simulator:odom_publisher",
         "//apps/benchbot_simulator:rgb_publisher",

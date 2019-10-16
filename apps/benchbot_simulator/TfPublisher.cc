@@ -1,4 +1,5 @@
 #include "TfPublisher.hh"
+#include "helpers.hh"
 
 #include "ros/ros.h"
 #include "tf/transform_broadcaster.h"
@@ -16,7 +17,7 @@ void TfPublisher::start() {
   if (!ros::isInitialized()) {
     ros::init(args, "tf_static_publisher", ros::init_options::NoSigintHandler);
   }
-  //
+
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
 
@@ -26,22 +27,13 @@ void TfPublisher::start() {
 
 void TfPublisher::stop() { ros_data_ = nullptr; }
 
-inline tf::Transform _pose3d_to_transform(const isaac::Pose3d &pose) {
-  return tf::Transform(tf::Quaternion(pose.rotation.quaternion().w(),
-                                      pose.rotation.quaternion().x(),
-                                      pose.rotation.quaternion().y(),
-                                      pose.rotation.quaternion().z()),
-                       tf::Vector3(pose.translation.x(), pose.translation.y(),
-                                   pose.translation.z()));
-}
-
 void TfPublisher::tick() {
   if (ros::ok()) {
     // LOG_DEBUG("Publishing tfs");
 
     // Setup information needed for our transforms
     std::optional<isaac::Pose3d> robot_to_frame;
-    ros::Time ros_time = ros::Time::now();
+    const ros::Time ros_time = ros::Time::now();
 
     // Get all requested tfs
     for (const std::string &s : get_tf_frames()) {
@@ -49,8 +41,8 @@ void TfPublisher::tick() {
           node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
       if (robot_to_frame) {
         ros_data_->tf_broadcaster.sendTransform(
-            tf::StampedTransform(_pose3d_to_transform(*robot_to_frame),
-                                 ros_time, get_tf_base_frame(), s));
+            tf::StampedTransform(pose3d_to_transform(*robot_to_frame), ros_time,
+                                 get_tf_base_frame(), s));
         // LOG_DEBUG("Published tf for: %s -> %s", get_tf_base_frame().c_str(),
         //           s.c_str());
       }
