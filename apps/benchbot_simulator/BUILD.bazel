@@ -11,6 +11,16 @@ isaac_cc_module(
     )
 
 isaac_cc_module(
+    name = "ground_truth_declarer",
+    srcs = ["ground_truth_declarer.cc"],
+    hdrs = ["ground_truth_declarer.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
     name = "localisation_publisher",
     srcs = ["localisation_publisher.cc"],
     hdrs = ["localisation_publisher.hh", "helpers.hh"],
@@ -83,6 +93,7 @@ isaac_app(
         ],
     modules = [
         "//apps/benchbot_simulator:depth_publisher",
+        "//apps/benchbot_simulator:ground_truth_declarer",
         "//apps/benchbot_simulator:localisation_publisher",
         "//apps/benchbot_simulator:lidar_publisher",
         "//apps/benchbot_simulator:odom_publisher",

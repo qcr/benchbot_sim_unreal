@@ -2,6 +2,7 @@
   "name": "benchbot_simulator",
   "modules": [
     "apps/benchbot_simulator:depth_publisher",
+    "apps/benchbot_simulator:ground_truth_declarer",
     "apps/benchbot_simulator:localisation_publisher",
     "apps/benchbot_simulator:lidar_publisher",
     "apps/benchbot_simulator:odom_publisher",
@@ -33,6 +34,19 @@
           {
             "name": "depth_publisher",
             "type": "benchbot::DepthPublisher"
+          }
+        ]
+      },
+      {
+        "name": "ground_truth_declarer",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "ground_truth_declarer",
+            "type": "benchbot::GroundTruthDeclarer"
           }
         ]
       },
@@ -121,20 +135,24 @@
         "target": "depth_publisher/depth_publisher/camera_depth"
       },
       {
+        "source": "RigidBodySubscriber/isaac.alice.TcpSubscriber/bodies",
+        "target": "ground_truth_declarer/ground_truth_declarer/unreal_poses"
+      },
+      {
         "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/ColorSensor",
         "target": "rgb_publisher/rgb_publisher/camera_rgb"
       },
       {
-        "source": "twist_subscriber/twist_subscriber/cmd_vel",
-        "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_command"
+        "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
+        "target": "lidar_publisher/lidar_publisher/lidar_scan"
       },
       {
         "source": "segway_odometry/isaac.navigation.DifferentialBaseOdometry/odometry",
         "target": "odom_publisher/odom_publisher/robot_odom"
       },
       {
-        "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
-        "target": "lidar_publisher/lidar_publisher/lidar_scan"
+        "source": "twist_subscriber/twist_subscriber/cmd_vel",
+        "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_command"
       }
     ]
   },

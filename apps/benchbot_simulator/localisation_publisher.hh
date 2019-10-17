@@ -22,7 +22,6 @@ class LocalisationPublisher : public isaac::alice::Codelet {
   ISAAC_PARAM(std::string, noisy_robot_frame, "robot");
   ISAAC_PARAM(std::string, noisy_odom_frame, "odom");
 
-  ISAAC_PARAM(std::string, gt_init_frame, "gt_robot_init");
   ISAAC_PARAM(std::string, gt_robot_frame, "gt_robot");
   ISAAC_PARAM(std::string, gt_world_frame, "gt_world");
 
@@ -34,7 +33,6 @@ class LocalisationPublisher : public isaac::alice::Codelet {
  private:
   bool callbackResetInitialPose(std_srvs::Empty::Request& req,
                                 std_srvs::Empty::Response& resp);
-  std::optional<isaac::Pose3d> world_to_init_;
 
   struct RosData;
   std::unique_ptr<RosData> ros_data_;
