@@ -9,6 +9,16 @@
 
 namespace benchbot {
 
+constexpr double LIDAR_FOV = 2 * M_PI;
+
+inline double wrap_angle_to_pi(const double angle) {
+  // Returns an angle between -PI & +PI in an inefficient way...
+  double a = angle;
+  while (a <= -M_PI) a += 2 * M_PI;
+  while (a >= M_PI) a -= 2 * M_PI;
+  return a;
+}
+
 struct LidarPublisher::RosData {
   ros::NodeHandle nh;
   ros::Publisher pub;
@@ -35,34 +45,26 @@ void LidarPublisher::stop() {
 
 void LidarPublisher::tick() {
   if (ros::ok()) {
-    // LOG_DEBUG("Received RGB from Isaac; passing to ROS");
-
     // Received a message, cache time ASAP
-    // ros::Time msg_time = ros::Time::now();
+    ros::Time msg_time = ros::Time::now();
 
     // Turn the Isaac message into a ROS message
-    // TODO figure this out...
-    // auto lidar_proto = rx_lidar_scan().getProto();
-    // std::ofstream o;
-    // o.open("/tmp/lidar/" + std::to_string(msg_time.toSec()) + ".txt");
-    // o << "Range Denormaliser: " << lidar_proto.getRangeDenormalizer()
-    //   << std::endl;
-    // o << "Intensity Denormaliser: " << lidar_proto.getIntensityDenormalizer()
-    //   << std::endl;
-    // o << "Delta Time: " << lidar_proto.getDeltaTime() << std::endl;
-    // o << "Invalid Threshold: " << lidar_proto.getInvalidRangeThreshold()
-    //   << std::endl;
-    // o << "Out of Threshold: " << lidar_proto.getOutOfRangeThreshold()
-    //   << std::endl;
-    // o << "Rays (range, intensity): " << std::endl;
-    // for (auto const &r : lidar_proto.getRays())
-    //   o << '\t' << r.getRange() << ',' << int(r.getIntensity()) << std::endl;
-    // o << "Thetas: " << std::endl;
-    // for (auto const &t : lidar_proto.getTheta()) o << '\t' << t << std::endl;
-    // o << "Phis: " << std::endl;
-    // for (auto const &p : lidar_proto.getPhi()) o << '\t' << p << std::endl;
-    // o.close();
+    auto lidar_proto = rx_lidar_scan().getProto();
+    sensor_msgs::LaserScan lidar_ros;
+    lidar_ros.header.stamp = msg_time;
+    lidar_ros.header.frame_id = "lidar";
+    lidar_ros.angle_min = *(lidar_proto.getAngles().end() - 1);
+    lidar_ros.angle_max = *lidar_proto.getAngles().begin();
+    lidar_ros.angle_increment =
+        LIDAR_FOV / double(lidar_proto.getAngles().size());
+    lidar_ros.range_min = lidar_proto.getInvalidRangeThreshold();
+    lidar_ros.range_max = lidar_proto.getOutOfRangeThreshold();
+    for (const double &r : lidar_proto.getRanges())
+      lidar_ros.ranges.push_back(r);
+    std::reverse(lidar_ros.ranges.begin(), lidar_ros.ranges.end());
 
+    // Publish the ROS LaserScan message
+    ros_data_->pub.publish(lidar_ros);
   } else {
     LOG_ERROR("Lost connection to ROS master; should shut down");
   }

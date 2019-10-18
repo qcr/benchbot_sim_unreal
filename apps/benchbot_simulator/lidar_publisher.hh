@@ -19,7 +19,7 @@ class LidarPublisher : public isaac::alice::Codelet {
   ISAAC_PARAM(std::string, lidar_channel_name, "/scan_laser");
   ISAAC_PARAM(std::string, lidar_frame_name, "lidar");
 
-  ISAAC_PROTO_RX(RangeScanProto, lidar_scan);
+  ISAAC_PROTO_RX(FlatscanProto, lidar_scan);
 
  private:
   struct RosData;

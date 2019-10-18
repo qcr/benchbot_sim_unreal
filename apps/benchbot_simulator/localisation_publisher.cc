@@ -56,14 +56,17 @@ void LocalisationPublisher::tick() {
         gt_world_to_robot(node()->pose().tryGet(
             get_gt_world_frame(), get_gt_robot_frame(), getTickTime()));
     if (!noisy_odom_to_robot) {
-      LOG_WARNING("We expected '%s' -> '%s', but could not find it... skipping",
-                  get_noisy_odom_frame().c_str(),
-                  get_noisy_robot_frame().c_str());
+      // LOG_WARNING("We expected '%s' -> '%s', but could not find it...
+      // skipping",
+      //             get_noisy_odom_frame().c_str(),
+      //             get_noisy_robot_frame().c_str());
       return;
     }
     if (!gt_world_to_robot) {
-      LOG_WARNING("We expected '%s' -> '%s', but could not find it... skipping",
-                  get_gt_world_frame().c_str(), get_gt_robot_frame().c_str());
+      // LOG_WARNING("We expected '%s' -> '%s', but could not find it...
+      // skipping",
+      //             get_gt_world_frame().c_str(),
+      //             get_gt_robot_frame().c_str());
       return;
     }
 
@@ -77,14 +80,14 @@ void LocalisationPublisher::tick() {
                   get_gt_world_frame().c_str(), get_noisy_odom_frame().c_str());
     }
 
-    const std::optional<isaac::Pose3d> noisy_world_to_robot(
-        node()->pose().tryGet(get_gt_world_frame(), get_noisy_robot_frame(),
-                              getTickTime()));
-    print_pose("GWGR", *gt_world_to_robot);
-    print_pose("WR", *noisy_world_to_robot);
-    print_pose("GWO", *gt_world_to_robot * noisy_odom_to_robot->inverse());
-    print_pose("OR", *noisy_odom_to_robot);
-    print_pose("OR^-1", noisy_odom_to_robot->inverse());
+    // const std::optional<isaac::Pose3d> noisy_world_to_robot(
+    //     node()->pose().tryGet(get_gt_world_frame(), get_noisy_robot_frame(),
+    //                           getTickTime()));
+    // print_pose("GWGR", *gt_world_to_robot);
+    // print_pose("WR", *noisy_world_to_robot);
+    // print_pose("GWO", *gt_world_to_robot * noisy_odom_to_robot->inverse());
+    // print_pose("OR", *noisy_odom_to_robot);
+    // print_pose("OR^-1", noisy_odom_to_robot->inverse());
 
     // Publish ground truth localisation to TF tree if mode requested
     if (get_ground_truth_mode()) {
