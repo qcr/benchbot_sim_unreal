@@ -17,7 +17,7 @@ class LocalisationPublisher : public isaac::alice::Codelet {
   void stop() override;
   void tick() override;
 
-  ISAAC_PARAM(bool, ground_truth_mode, false);
+  ISAAC_PARAM(bool, ground_truth_mode, true);
 
   ISAAC_PARAM(std::string, noisy_robot_frame, "robot");
   ISAAC_PARAM(std::string, noisy_odom_frame, "odom");
