@@ -8,6 +8,15 @@
 
 namespace benchbot {
 
+void print_pose(const std::string& name, const isaac::Pose3d& p) {
+  printf("%s: T=(%f,%f,%f) Q=(%f,%f,%f,%f) E=(%f,%f,%f)\n", name.c_str(),
+         p.translation.x(), p.translation.y(), p.translation.z(),
+         p.rotation.quaternion().w(), p.rotation.quaternion().x(),
+         p.rotation.quaternion().y(), p.rotation.quaternion().z(),
+         p.rotation.eulerAnglesRPY().x(), p.rotation.eulerAnglesRPY().y(),
+         p.rotation.eulerAnglesRPY().z());
+}
+
 struct LocalisationPublisher::RosData {
   ros::NodeHandle nh;
   ros::ServiceServer service;
@@ -17,12 +26,8 @@ struct LocalisationPublisher::RosData {
 };
 
 void LocalisationPublisher::start() {
-  // Start a ROS node & delegate SIGINT handling to Isaac
-  ros::M_string args;
-  if (!ros::isInitialized()) {
-    ros::init(args, "localisation_publisher",
-              ros::init_options::NoSigintHandler);
-  }
+  // Start our monolothic ROS node if it doesn't already exist
+  start_ros_node();
 
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
@@ -44,18 +49,30 @@ void LocalisationPublisher::tick() {
   if (ros::ok()) {
     const ros::Time ros_time = ros::Time::now();
 
-    // If world to odom doesn't exist, it should be set at least once
+    // Ensure we have all required data
     const std::optional<isaac::Pose3d> noisy_odom_to_robot(
         node()->pose().tryGet(get_noisy_odom_frame(), get_noisy_robot_frame(),
                               getTickTime())),
         gt_world_to_robot(node()->pose().tryGet(
             get_gt_world_frame(), get_gt_robot_frame(), getTickTime()));
-    std::optional<isaac::Pose3d> gt_world_to_odom(node()->pose().tryGet(
-        get_gt_world_frame(), get_noisy_odom_frame(), getTickTime()));
-    if (!gt_world_to_odom) {
-      gt_world_to_odom = *gt_world_to_robot * noisy_odom_to_robot->inverse();
+    if (!noisy_odom_to_robot) {
+      LOG_WARNING("We expected '%s' -> '%s', but could not find it... skipping",
+                  get_noisy_odom_frame().c_str(),
+                  get_noisy_robot_frame().c_str());
+      return;
+    }
+    if (!gt_world_to_robot) {
+      LOG_WARNING("We expected '%s' -> '%s', but could not find it... skipping",
+                  get_gt_world_frame().c_str(), get_gt_robot_frame().c_str());
+      return;
+    }
+
+    // If world to odom doesn't exist, it should be set at least once
+    if (!node()->pose().tryGet(get_gt_world_frame(), get_noisy_odom_frame(),
+                               getTickTime())) {
       node()->pose().set(get_gt_world_frame(), get_noisy_odom_frame(),
-                         *gt_world_to_odom, getTickTime());
+                         *gt_world_to_robot * noisy_odom_to_robot->inverse(),
+                         getTickTime());
       LOG_WARNING("No '%s' to '%s' found, so we set it...",
                   get_gt_world_frame().c_str(), get_noisy_odom_frame().c_str());
     }
@@ -63,25 +80,18 @@ void LocalisationPublisher::tick() {
     const std::optional<isaac::Pose3d> noisy_world_to_robot(
         node()->pose().tryGet(get_gt_world_frame(), get_noisy_robot_frame(),
                               getTickTime()));
-    LOG_INFO("GT: \n(%f,%f,%f)+(%f,%f,%f) \nvs Noise: \n(%f,%f,%f)+(%f,%f,%f)",
-             gt_world_to_robot->translation.x(),
-             gt_world_to_robot->translation.y(),
-             gt_world_to_robot->translation.z(),
-             gt_world_to_robot->rotation.eulerAnglesRPY().x(),
-             gt_world_to_robot->rotation.eulerAnglesRPY().y(),
-             gt_world_to_robot->rotation.eulerAnglesRPY().z(),
-             noisy_world_to_robot->translation.x(),
-             noisy_world_to_robot->translation.y(),
-             noisy_world_to_robot->translation.z(),
-             noisy_world_to_robot->rotation.eulerAnglesRPY().x(),
-             noisy_world_to_robot->rotation.eulerAnglesRPY().y(),
-             noisy_world_to_robot->rotation.eulerAnglesRPY().z());
+    print_pose("GWGR", *gt_world_to_robot);
+    print_pose("WR", *noisy_world_to_robot);
+    print_pose("GWO", *gt_world_to_robot * noisy_odom_to_robot->inverse());
+    print_pose("OR", *noisy_odom_to_robot);
+    print_pose("OR^-1", noisy_odom_to_robot->inverse());
 
     // Publish ground truth localisation to TF tree if mode requested
     if (get_ground_truth_mode()) {
-      ros_data_->tf_broadcaster.sendTransform(
-          tf::StampedTransform(pose3d_to_transform(*gt_world_to_odom), ros_time,
-                               get_tf_map_frame(), get_tf_odom_frame()));
+      ros_data_->tf_broadcaster.sendTransform(tf::StampedTransform(
+          pose3d_to_transform(*gt_world_to_robot *
+                              noisy_odom_to_robot->inverse()),
+          ros_time, get_tf_map_frame(), get_tf_odom_frame()));
     }
 
     // Tick the callback queue

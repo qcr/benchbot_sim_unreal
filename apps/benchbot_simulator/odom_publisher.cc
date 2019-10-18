@@ -1,5 +1,6 @@
 #include "odom_publisher.hh"
 
+#include "helpers.hh"
 #include "nav_msgs/Odometry.h"
 #include "ros/ros.h"
 #include "tf/transform_broadcaster.h"
@@ -18,11 +19,8 @@ struct OdomPublisher::RosData {
 };
 
 void OdomPublisher::start() {
-  // Start a ROS node & delegate SIGINT handling to Isaac
-  ros::M_string args;
-  if (!ros::isInitialized()) {
-    ros::init(args, "odom_publisher", ros::init_options::NoSigintHandler);
-  }
+  // Start our monolothic ROS node if it doesn't already exist
+  start_ros_node();
 
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();

@@ -1,6 +1,7 @@
 #include "depth_publisher.hh"
 
 #include "cv_bridge/cv_bridge.h"
+#include "helpers.hh"
 #include "image_transport/image_transport.h"
 #include "messages/camera.hpp"
 #include "ros/ros.h"
@@ -14,11 +15,8 @@ struct DepthPublisher::RosData {
 };
 
 void DepthPublisher::start() {
-  // Start a ROS node & delegate SIGINT handling to Isaac
-  ros::M_string args;
-  if (!ros::isInitialized()) {
-    ros::init(args, "depth_publisher", ros::init_options::NoSigintHandler);
-  }
+  // Start our monolothic ROS node if it doesn't already exist
+  start_ros_node();
 
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();

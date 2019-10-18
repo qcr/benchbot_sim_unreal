@@ -1,6 +1,6 @@
-#include "helpers.hh"
 #include "tf_publisher.hh"
 
+#include "helpers.hh"
 #include "ros/ros.h"
 #include "tf/transform_broadcaster.h"
 
@@ -12,11 +12,8 @@ struct TfPublisher::RosData {
 };
 
 void TfPublisher::start() {
-  // Start a ROS node & delegate SIGINT handling to Isaac
-  ros::M_string args;
-  if (!ros::isInitialized()) {
-    ros::init(args, "tf_static_publisher", ros::init_options::NoSigintHandler);
-  }
+  // Start our monolothic ROS node if it doesn't already exist
+  start_ros_node();
 
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
