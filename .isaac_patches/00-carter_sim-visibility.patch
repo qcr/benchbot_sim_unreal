@@ -1,0 +1,21 @@
+diff '--exclude=bazel-*' '--exclude=unity' '--exclude=*full*' '--exclude=*ware*' -Naur /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/BUILD ./apps/carter/carter_sim/BUILD
+--- /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/BUILD	2019-06-25 10:03:39.000000000 +1000
++++ ./apps/carter/carter_sim/BUILD	2019-09-30 11:04:14.857720415 +1000
+@@ -10,6 +10,17 @@
+ 
+ load("//engine/build:isaac.bzl", "isaac_app")
+ 
++filegroup(
++    name = "carter_public_files",
++    data = [
++        "carter.graph.json",
++        "carter.config.json",
++        "navigation.graph.json",
++        "navigation.config.json"
++        ],
++    visibility = ["//visibility:public"]
++    )
++
+ isaac_app(
+     name = "carter_sim",
+     app_json_file = "carter_sim.app.json",

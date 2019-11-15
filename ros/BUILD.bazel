@@ -1,0 +1,20 @@
+cc_library(
+    name = "ros",
+    srcs = glob(["lib/*.so*"]),
+    hdrs = glob([
+        "include/**/*.h",
+        "include/**/*.hpp",
+        ]),
+    strip_include_prefix = "include",
+    data = [":built_packages"],
+    visibility = ["//visibility:public"],
+    )
+
+genrule(
+    name = "build",
+    local = True,
+    srcs = [":required_packages"],
+    outs = ["built_packages"],
+    tools = [":build.bash"],
+    cmd = "$(location :build.bash) $< $@ $$(dirname $(location :required_packages))"
+    )

@@ -1,0 +1,109 @@
+load("@com_nvidia_isaac//engine/build:isaac.bzl", "isaac_app", "isaac_cc_module", "isaac_pkg")
+
+isaac_cc_module(
+    name = "depth_publisher",
+    srcs = ["depth_publisher.cc"],
+    hdrs = ["depth_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "ground_truth_declarer",
+    srcs = ["ground_truth_declarer.cc"],
+    hdrs = ["ground_truth_declarer.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "localisation_publisher",
+    srcs = ["localisation_publisher.cc"],
+    hdrs = ["localisation_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "lidar_publisher",
+    srcs = ["lidar_publisher.cc"],
+    hdrs = ["lidar_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "odom_publisher",
+    srcs = ["odom_publisher.cc"],
+    hdrs = ["odom_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "rgb_publisher",
+    srcs = ["rgb_publisher.cc"],
+    hdrs = ["rgb_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "tf_publisher",
+    srcs = ["tf_publisher.cc"],
+    hdrs = ["tf_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
+    name = "twist_subscriber",
+    srcs = ["twist_subscriber.cc"],
+    hdrs = ["twist_subscriber.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        "@com_nvidia_isaac//messages/state:differential_base",
+        "@com_nvidia_isaac//engine/gems/state:io"
+        ]
+    )
+
+isaac_app(
+    name = "benchbot_simulator",
+    data = [
+        ":carter_benchbot.graph.json",
+        ":carter_benchbot.config.json",
+        "@com_nvidia_isaac//apps/assets/maps",
+        "@com_nvidia_isaac//packages/map:libmap_module.so",
+        "@com_nvidia_isaac//apps/carter/carter_sim:carter_public_files"
+        ],
+    modules = [
+        "//apps/benchbot_simulator:depth_publisher",
+        "//apps/benchbot_simulator:ground_truth_declarer",
+        "//apps/benchbot_simulator:localisation_publisher",
+        "//apps/benchbot_simulator:lidar_publisher",
+        "//apps/benchbot_simulator:odom_publisher",
+        "//apps/benchbot_simulator:rgb_publisher",
+        "//apps/benchbot_simulator:tf_publisher",
+        "//apps/benchbot_simulator:twist_subscriber",
+        "@com_nvidia_isaac//packages/navigation",
+        "@com_nvidia_isaac//packages/perception",
+        "@com_nvidia_isaac//packages/planner",
+        "@com_nvidia_isaac//packages/viewers",
+        "@com_nvidia_isaac//packages/flatsim"
+        ]
+    )

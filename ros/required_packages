@@ -1,0 +1,8 @@
+cv_bridge
+geometry_msgs
+image_transport
+nav_msgs
+roscpp
+std_msgs
+sensor_msgs
+tf

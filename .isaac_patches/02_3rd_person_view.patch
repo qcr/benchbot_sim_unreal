@@ -1,0 +1,12 @@
+diff '--exclude=bazel-*' '--exclude=unity' -Naur /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/bridge_config/carter_full_config.json ./apps/carter/carter_sim/bridge_config/carter_full_config.json
+--- /home/ben/tmp/isaac_sdk_clean/apps/carter/carter_sim/bridge_config/carter_full_config.json	2019-10-02 06:35:02.122127773 +1000
++++ ./apps/carter/carter_sim/bridge_config/carter_full_config.json	2019-11-05 17:10:05.714023222 +1000
+@@ -118,7 +118,7 @@
+   "CarterRightCamera": {
+     "CameraComponent": {
+       "parent_actor": "carter_1",
+-      "parent_T_camera": [1, 0, 0, 0, 0.11, -0.06, 0.31],
++      "parent_T_camera": [1, 0, 0.2, 0, -1, 0.0, 1.0],
+       "cols": 960,
+       "rows": 540,
+       "fov": 90.0,

@@ -1,0 +1,178 @@
+{
+  "name": "benchbot_simulator",
+  "modules": [
+    "apps/benchbot_simulator:depth_publisher",
+    "apps/benchbot_simulator:ground_truth_declarer",
+    "apps/benchbot_simulator:localisation_publisher",
+    "apps/benchbot_simulator:lidar_publisher",
+    "apps/benchbot_simulator:odom_publisher",
+    "apps/benchbot_simulator:rgb_publisher",
+    "apps/benchbot_simulator:tf_publisher",
+    "apps/benchbot_simulator:twist_subscriber",
+    "external/com_nvidia_isaac/packages/map",
+    "external/com_nvidia_isaac/packages/navigation",
+    "external/com_nvidia_isaac/packages/perception",
+    "external/com_nvidia_isaac/packages/planner",
+    "external/com_nvidia_isaac/packages/viewers",
+    "external/com_nvidia_isaac/packages/flatsim"
+  ],
+  "config_files": [
+    "apps/benchbot_simulator/carter_benchbot.config.json"
+  ],
+  "graph_files": [
+    "apps/benchbot_simulator/carter_benchbot.graph.json"
+  ],
+  "graph": {
+    "nodes": [
+      {
+        "name": "depth_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "depth_publisher",
+            "type": "benchbot::DepthPublisher"
+          }
+        ]
+      },
+      {
+        "name": "ground_truth_declarer",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "ground_truth_declarer",
+            "type": "benchbot::GroundTruthDeclarer"
+          }
+        ]
+      },
+      {
+        "name": "localisation_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "localisation_publisher",
+            "type": "benchbot::LocalisationPublisher"
+          }
+        ]
+      },
+      {
+        "name": "lidar_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "lidar_publisher",
+            "type": "benchbot::LidarPublisher"
+          }
+        ]
+      },
+      {
+        "name": "odom_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "odom_publisher",
+            "type": "benchbot::OdomPublisher"
+          }
+        ]
+      },
+      {
+        "name": "rgb_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "rgb_publisher",
+            "type": "benchbot::RgbPublisher"
+          }
+        ]
+      },
+      {
+        "name": "tf_publisher",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "tf_publisher",
+            "type": "benchbot::TfPublisher"
+          }
+        ]
+      },
+      {
+        "name": "twist_subscriber",
+        "components": [
+          {
+            "name": "message_ledger",
+            "type": "isaac::alice::MessageLedger"
+          },
+          {
+            "name": "twist_subscriber",
+            "type": "benchbot::TwistSubscriber"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/DepthSensor",
+        "target": "depth_publisher/depth_publisher/camera_depth"
+      },
+      {
+        "source": "RigidBodySubscriber/isaac.alice.TcpSubscriber/bodies",
+        "target": "ground_truth_declarer/ground_truth_declarer/unreal_poses"
+      },
+      {
+        "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/ColorSensor",
+        "target": "rgb_publisher/rgb_publisher/camera_rgb"
+      },
+      {
+        "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
+        "target": "lidar_publisher/lidar_publisher/lidar_scan"
+      },
+      {
+        "source": "segway_odometry/isaac.navigation.DifferentialBaseOdometry/odometry",
+        "target": "odom_publisher/odom_publisher/robot_odom"
+      },
+      {
+        "source": "twist_subscriber/twist_subscriber/cmd_vel",
+        "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_command"
+      }
+    ]
+  },
+  "config": {
+    "localisation_publisher": {
+      "localisation_publisher": {
+        "tick_period": "30Hz"
+      }
+    },
+    "tf_publisher": {
+      "tf_publisher": {
+        "tick_period": "30Hz",
+        "tf_base_frame": "robot",
+        "tf_frames": ["lidar", "left_camera", "right_camera"]
+      }
+    },
+    "twist_subscriber": {
+      "twist_subscriber": {
+        "tick_period": "30Hz"
+      }
+    }
+  }
+}

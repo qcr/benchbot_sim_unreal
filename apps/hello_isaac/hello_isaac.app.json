@@ -1,0 +1,25 @@
+{
+  "name": "hello_isaac",
+  "modules": ["//apps/hello_isaac:ping_isaac"],
+  "graph": {
+    "nodes": [
+      {
+        "name": "ping_isaac",
+        "components": [
+          {
+            "name": "ping_isaac",
+            "type": "isaac::IsaacPinger"
+          }
+        ]
+      }
+    ],
+    "edges": []
+  },
+  "config": {
+    "ping_isaac": {
+      "ping_isaac": {
+        "tick_period": "1Hz"
+      }
+    }
+  }
+}

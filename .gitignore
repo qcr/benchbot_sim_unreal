@@ -1,0 +1,11 @@
+*.sw*
+
+compile_commands.json
+bazel-*
+
+.isaac_sdk
+
+ros
+!ros/BUILD.bazel
+!ros/required_packages
+!ros/build.bash

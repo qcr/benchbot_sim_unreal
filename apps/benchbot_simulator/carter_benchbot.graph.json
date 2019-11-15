@@ -1,0 +1,324 @@
+{
+  "nodes": [
+    {
+      "name": "base_simulation",
+      "components": [
+        {
+          "name": "message_ledger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.flatsim.DifferentialBaseSimulator",
+          "type": "isaac::flatsim::DifferentialBaseSimulator"
+        },
+        {
+          "name": "isaac.alice.Failsafe",
+          "type": "isaac::alice::Failsafe"
+        }
+      ]
+    },
+    {
+      "name": "scan_accumulator",
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.perception.ScanAccumulator",
+          "type": "isaac::perception::ScanAccumulator"
+        }
+      ]
+    },
+    {
+      "name": "range_scan_flattening",
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.perception.RangeScanFlattening",
+          "type": "isaac::perception::RangeScanFlattening"
+        }
+      ]
+    },
+    {
+      "name": "ActuatorPublisher",
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.alice.TcpPublisher",
+          "type": "isaac::alice::TcpPublisher"
+        },
+        {
+          "name": "TimeSynchronizer",
+          "type": "isaac::alice::TimeSynchronizer"
+        }
+      ]
+    },
+    {
+      "name": "RigidBodySubscriber",
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.alice.TcpSubscriber",
+          "type": "isaac::alice::TcpSubscriber"
+        },
+        {
+          "name": "TimeSynchronizer",
+          "type": "isaac::alice::TimeSynchronizer"
+        }
+      ]
+    },
+    {
+      "name": "LidarSubscriber",
+      "components": [
+        {
+          "name": "lidar_initializer",
+          "type": "isaac::alice::PoseInitializer"
+        },
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.alice.TcpSubscriber",
+          "type": "isaac::alice::TcpSubscriber"
+        },
+        {
+          "name": "TimeSynchronizer",
+          "type": "isaac::alice::TimeSynchronizer"
+        }
+      ]
+    },
+    {
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.viewers.ColorCameraViewer",
+          "type": "isaac::viewers::ColorCameraViewer"
+        }
+      ],
+      "name": "LeftColorCameraViewer"
+    },
+    {
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.viewers.DepthCameraViewer",
+          "type": "isaac::viewers::DepthCameraViewer"
+        }
+      ],
+      "name": "LeftDepthCameraViewer"
+    },
+    {
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.viewers.SegmentationCameraViewer",
+          "type": "isaac::viewers::SegmentationCameraViewer"
+        }
+      ],
+      "name": "LeftSegmentationCameraViewer"
+    },
+    {
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.viewers.DetectionsViewer",
+          "type": "isaac::viewers::DetectionsViewer"
+        }
+      ],
+      "name": "LeftDetectionsViewer"
+    },
+    {
+      "components": [
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.viewers.ColorCameraViewer",
+          "type": "isaac::viewers::ColorCameraViewer"
+        }
+      ],
+      "name": "RightColorCameraViewer"
+    },
+    {
+      "components": [
+        {
+          "name": "left_camera_initializer",
+          "type": "isaac::alice::PoseInitializer"
+        },
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.alice.TcpSubscriber",
+          "type": "isaac::alice::TcpSubscriber"
+        },
+        {
+          "name": "TimeSynchronizer",
+          "type": "isaac::alice::TimeSynchronizer"
+        }
+      ],
+      "name": "LeftCameraSubscriber"
+    },
+    {
+      "components": [
+        {
+          "name": "right_camera_initializer",
+          "type": "isaac::alice::PoseInitializer"
+        },
+        {
+          "name": "isaac.alice.MessageLedger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.alice.TcpSubscriber",
+          "type": "isaac::alice::TcpSubscriber"
+        },
+        {
+          "name": "TimeSynchronizer",
+          "type": "isaac::alice::TimeSynchronizer"
+        }
+      ],
+      "name": "RightCameraSubscriber"
+    },
+    {
+      "name": "recorder",
+      "components": [
+        {
+          "name": "message_ledger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.alice.Recorder",
+          "type": "isaac::alice::Recorder"
+        }
+      ]
+    },
+    {
+      "name": "recorder_bridge",
+      "components": [
+        {
+          "name": "message_ledger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "RecorderBridge",
+          "type": "isaac::alice::RecorderBridge"
+        }
+      ]
+    },
+    {
+      "name": "shared_robot_model",
+      "components": [
+        {
+          "name": "RangeScanModel",
+          "type": "isaac::navigation::RangeScanModelFlatloc"
+        },
+        {
+          "name": "DifferentialBaseModel",
+          "type": "isaac::planner::DifferentialBaseModel"
+        },
+        {
+          "name": "SphericalRobotShapeComponent",
+          "type": "isaac::planner::SphericalRobotShapeComponent"
+        }
+      ]
+    },
+    {
+      "name": "segway_odometry",
+      "components": [
+        {
+          "name": "message_ledger",
+          "type": "isaac::alice::MessageLedger"
+        },
+        {
+          "name": "isaac.navigation.DifferentialBaseOdometry",
+          "type": "isaac::navigation::DifferentialBaseOdometry"
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "LidarSubscriber/isaac.alice.TcpSubscriber/LidarSensor",
+      "target": "scan_accumulator/isaac.perception.ScanAccumulator/scan"
+    },
+    {
+      "source": "scan_accumulator/isaac.perception.ScanAccumulator/fullscan",
+      "target": "range_scan_flattening/isaac.perception.RangeScanFlattening/scan"
+    },
+    {
+      "source": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/physics_actuation",
+      "target": "ActuatorPublisher/isaac.alice.TcpPublisher/physics_actuation"
+    },
+    {
+      "source": "RigidBodySubscriber/isaac.alice.TcpSubscriber/bodies",
+      "target": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/physics_bodies"
+    },
+    {
+      "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/ColorSensor",
+      "target": "LeftColorCameraViewer/isaac.viewers.ColorCameraViewer/color_listener"
+    },
+    {
+      "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/DepthSensor",
+      "target": "LeftDepthCameraViewer/isaac.viewers.DepthCameraViewer/depth_listener"
+    },
+    {
+      "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/SegmentationSensor",
+      "target": "LeftSegmentationCameraViewer/isaac.viewers.SegmentationCameraViewer/segmentation_listener"
+    },
+    {
+      "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/BoundingBox",
+      "target": "LeftDetectionsViewer/isaac.viewers.DetectionsViewer/detections"
+    },
+    {
+      "source": "RightCameraSubscriber/isaac.alice.TcpSubscriber/ColorSensor",
+      "target": "RightColorCameraViewer/isaac.viewers.ColorCameraViewer/color_listener"
+    },
+    {
+      "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
+      "target": "recorder/isaac.alice.Recorder/flatscan"
+    },
+    {
+      "source": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_state",
+      "target": "recorder/isaac.alice.Recorder/segway_state"
+    },
+    {
+      "source": "websight/WebsightServer/record",
+      "target": "recorder_bridge/RecorderBridge/request"
+    },
+    {
+      "source": "recorder_bridge/RecorderBridge/reply",
+      "target": "websight/WebsightServer/recorder_reply"
+    },
+    {
+      "source": "base_simulation/isaac.flatsim.DifferentialBaseSimulator/diff_base_state",
+      "target": "segway_odometry/isaac.navigation.DifferentialBaseOdometry/state"
+    }
+
+  ]
+}
