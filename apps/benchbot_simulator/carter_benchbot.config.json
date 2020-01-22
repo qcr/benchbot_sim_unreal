@@ -109,7 +109,7 @@
     "left_camera_initializer": {
       "lhs_frame": "robot",
       "rhs_frame": "left_camera",
-      "pose": [0.5, -0.5, 0.5, -0.5, 0.11, 0.06, 0.31]
+      "pose": [0.5, -0.5, 0.5, -0.5, 0.11, 0.06, 0.8]
     },
     "isaac.alice.TcpSubscriber": {
       "port": 5003,
@@ -120,7 +120,7 @@
     "right_camera_initializer": {
       "lhs_frame": "robot",
       "rhs_frame": "right_camera",
-      "pose": [0.5, -0.5, 0.5, -0.5, 0.11, -0.06, 0.31]
+      "pose": [1.0, 0.0, 0.2, 0.0, -1, 0.0, 1.0]
     },
     "isaac.alice.TcpSubscriber": {
       "port": 5004,
