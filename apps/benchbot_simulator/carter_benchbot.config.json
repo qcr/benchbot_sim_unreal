@@ -120,7 +120,7 @@
     "right_camera_initializer": {
       "lhs_frame": "robot",
       "rhs_frame": "right_camera",
-      "pose": [1.0, 0.0, 0.2, 0.0, -1, 0.0, 1.0]
+      "pose": [0.552, -0.552, 0.442, -0.442, -1, 0.0, 1.0]
     },
     "isaac.alice.TcpSubscriber": {
       "port": 5004,
