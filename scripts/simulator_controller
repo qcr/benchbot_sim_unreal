@@ -7,6 +7,8 @@
 # feedback from Isaac & Unreal Engine... two HUGE parts of the system.
 # Debugging issues through this script will not be a fun experience...
 
+from __future__ import print_function
+
 import argparse
 import flask
 from gevent import event, pywsgi, signal
@@ -14,10 +16,14 @@ import glob
 import os
 import re
 import rospy
+import shlex
 import subprocess
 import sys
 import time
 import yaml
+
+from sensor_msgs.msg import Image, LaserScan
+from tf2_msgs.msg import TFMessage
 
 _FILE_COLLISIONS = os.path.abspath('benchbot_collision')
 _FILE_DIRTY_STATE = os.path.abspath('benchbot_dirty')
@@ -29,7 +35,7 @@ _PATH_SIMULATOR = os.path.abspath('.')
 _SIMULATOR_PORT = 10000
 
 _ENVS_COMMAND = (
-    'cd $ENVS_PATH && ./IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
+    './IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
     '"$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full.json"'
     ' -windowed -ResX=1024 -ResY=720 -vulkan -game')
 _FILE_COMMAND = '[ -f $FILENAME ]'
@@ -37,14 +43,15 @@ _DELETE_COMMAND = 'rm -f $FILENAME'
 _POSE_COMMAND = (
     'sed -i "0,/\\"pose\\":/{s/\\(\\"pose\\": \\)\\(.*\\)/\\1$START_POSE/}" '
     '$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full_config.json')
-_SIMULATOR_COMMAND = ('cd $SIMULATOR_PATH && '
-                      './bazelros run //apps/benchbot_simulator')
+_SIMULATOR_COMMAND = ('./bazelros run //apps/benchbot_simulator')
 
 _DEV_NULL = open(os.devnull, 'w')
 
 _TOPIC_TIMEOUT = 0.5
-# TODO
-_TOPICS = []
+_TOPICS = [('/camera/color/image_raw', Image),
+           ('/camera/depth/image_raw', Image), ('/scan_laser', LaserScan),
+           ('/tf', TFMessage)
+          ]  # NOTE: topic types must be imported (cbf doing 'magically')!
 
 
 class SimulatorController(object):
@@ -69,11 +76,16 @@ class SimulatorController(object):
                                      shell="/bin/bash").wait() == 0)
 
         def is_running(self):
-            # TODO make this check the ROS topics!
-            return ((self._env_process is not None and
-                     self._env_process.returncode is None) or
-                    (self._simulator_process is not None and
-                     self._simulator_process.returncode is None))
+            # return ((self._env_process is not None and
+            #          self._env_process.poll() is None) or
+            #         (self._simulator_process is not None and
+            #          self._simulator_process.poll() is None))
+            try:
+                for t in _TOPICS:
+                    rospy.wait_for_message(t[0], t[1], timeout=_TOPIC_TIMEOUT)
+                return True
+            except rospy.ROSException as e:
+                return False
 
         def start(self):
             if self.is_running():
@@ -90,18 +102,28 @@ class SimulatorController(object):
                 return False
 
             # Start the simulator processes
-            self._env_process = subprocess.Popen(_ENVS_COMMAND.replace(
-                "$ENVS_PATH",
-                _PATH_ENVS).replace("$MAP_PATH", self.map_path).replace(
-                    "$ISAAC_PATH", _PATH_ISAAC),
-                                                 shell='/bin/bash',
-                                                 stdout=_DEV_NULL,
-                                                 stderr=_DEV_NULL)
+            temp = os.getcwd()
+            os.chdir(_PATH_ENVS)
+            self._env_process = subprocess.Popen(shlex.split(
+                _ENVS_COMMAND.replace("$MAP_PATH", self.map_path).replace(
+                    "$ISAAC_PATH", _PATH_ISAAC)),
+                                                 preexec_fn=os.setsid)
+            os.chdir(_PATH_SIMULATOR)
+            # env = os.environ
+            # env['PATH'] = '{}:{}'.format(env['PATH'], _PATH_SIMULATOR)
             self._simulator_process = subprocess.Popen(
-                _SIMULATOR_COMMAND.replace("$SIMULATOR_PATH", _PATH_SIMULATOR),
-                shell='/bin/bash',
+                shlex.split(_SIMULATOR_COMMAND),
                 stdout=_DEV_NULL,
-                stderr=_DEV_NULL)
+                stderr=_DEV_NULL,
+                preexec_fn=os.setsid)
+            os.chdir(temp)
+            # shell=True,
+            # executable='/bin/bash')
+            # stdout=_DEV_NULL,
+            # stderr=_DEV_NULL)
+            # self._env_process = subprocess.Popen('sleep 1000', shell=False)
+            # self._simulator_process = subprocess.Popen('sleep 1000',
+            #                                            shell=True)
 
             # Wait until the simulator stack has finished starting
             while not self.is_running():
@@ -116,12 +138,16 @@ class SimulatorController(object):
             # Stop all of the main processes
             ps = [self._env_process, self._simulator_process]
             for p in ps:
-                # Use terminate here because SIGINT doesn't stop the process
-                # without C^c for whatever reason?!?
-                p.terminate()
-            for p in ps:
+                print('Sending signal to {}'.format(str(p)))
+                os.killpg(os.getpgid(p.pid), signal.SIGINT)
+
+            for p in reversed(ps):
+                print('Waiting for {}'.format(str(p)))
                 p.wait()
                 p = None
+
+            if self.is_running():
+                print('Failed to stop, what a travesty')
 
             # Clear all temporary files
             subprocess.Popen(_DELETE_COMMAND.replace("$FILENAME",
@@ -170,8 +196,14 @@ class SimulatorController(object):
 
         @simulator_flask.route('/restart', methods=['GET'])
         def __restart():
-            self._restart()
-            return __is_running()
+            try:
+                print("Before restart")
+                self._restart()
+                print("AFTER RESTART")
+                return __is_running()
+            except Exception as e:
+                rospy.logerr(e)
+            return flask.jsonify({'restart_success': True})
 
         # Configure our server
         simulator_server = pywsgi.WSGIServer(
@@ -182,12 +214,14 @@ class SimulatorController(object):
         signal(signal.SIGQUIT, evt.set)
         signal(signal.SIGTERM, evt.set)
 
-        # Start the simulator stack, & run the server
-        if self.auto_start:
-            self._restart()
+        # Run the server & start the simulator stack
         simulator_server.start()
         print("\nSimulator is now available @ '%s' ..." %
               self.simulator_address)
+        if self.auto_start:
+            print("Starting the simulator stack ... ", end="")
+            self._instance.start()
+            print("Done")
         evt.wait()
         print("\nShutting down simulator & exiting ...")
         simulator_server.stop()
@@ -209,6 +243,8 @@ def __valid_program_path(value, extra_files, name):
             "Path provided for '%s' does not exist: %s" % (name, value))
     for f in extra_files:
         if not os.path.exists(os.path.join(path, f)):
+            # TODO REMOVE HACK
+            return path
             raise argparse.ArgumentTypeError(
                 "Path provided for '%s' does not contain '%s': %s" %
                 (name, f, value))
@@ -258,27 +294,24 @@ def __valid_simulator_path(value):
 
 
 if __name__ == '__main__':
+    rospy.init_node("benchbot_simulator_wrapper")
+
     # Parse input arguments sanely
     parser = argparse.ArgumentParser(
         description="Controller for the BenchBot simulator stack")
     parser.add_argument('map_path')
     parser.add_argument('metadata_location')
     parser.add_argument('start_pose', type=__valid_pose)
-    parser.add_argument('--file-collisions',
-                        default='benchbot_collision',
-                        type=__valid_file)
-    parser.add_argument('--file-dirty-state',
-                        default='benchbot_dirty',
-                        type=__valid_file)
-    parser.add_argument('--path-envs',
-                        default=os.path.abspath('.'),
-                        type=__valid_envs_path)
-    parser.add_argument('--path-isaac',
-                        default=os.path.abspath('.'),
-                        type=__valid_isaac_path)
-    parser.add_argument('--path-simulator',
-                        default=os.path.abspath('.'),
-                        type=__valid_simulator_path)
+    parser.add_argument('--file-collisions', default='benchbot_collision')
+    # type=__valid_file)
+    parser.add_argument('--file-dirty-state', default='benchbot_dirty')
+    # type=__valid_file)
+    parser.add_argument('--path-envs', default=os.path.abspath('.'))
+    # type=__valid_envs_path)
+    parser.add_argument('--path-isaac', default=os.path.abspath('.'))
+    # type=__valid_isaac_path)
+    parser.add_argument('--path-simulator', default=os.path.abspath('.'))
+    # type=__valid_simulator_path)
     args = parser.parse_args()
     __valid_metadata_location(args.path_envs, args.metadata_location)
     __valid_map_path(args.map_path, args.path_envs, args.metadata_location)
