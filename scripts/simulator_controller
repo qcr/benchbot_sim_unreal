@@ -32,8 +32,6 @@ _PATH_ENVS = os.path.abspath('.')
 _PATH_ISAAC = os.path.abspath('.')
 _PATH_SIMULATOR = os.path.abspath('.')
 
-_SIMULATOR_PORT = 10000
-
 _ENVS_COMMAND = (
     'cd "$ENVS_PATH" && '
     './IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
@@ -148,11 +146,7 @@ class SimulatorController(object):
                              shell=True,
                              executable='/bin/bash').wait()
 
-    def __init__(self,
-                 map_path,
-                 start_pose,
-                 auto_start=True,
-                 port=_SIMULATOR_PORT):
+    def __init__(self, map_path, start_pose, port, auto_start=True):
         self.auto_start = auto_start
 
         self.simulator_address = 'http://0.0.0.0:' + str(port)
@@ -305,6 +299,7 @@ if __name__ == '__main__':
     parser.add_argument('--path-simulator',
                         default=os.path.abspath('.'),
                         type=__valid_simulator_path)
+    parser.add_argument('--port', type=int, required=True)
     args = parser.parse_args()
     __valid_metadata_location(args.path_envs, args.metadata_location)
     __valid_map_path(args.map_path, args.path_envs, args.metadata_location)
@@ -317,5 +312,5 @@ if __name__ == '__main__':
     _PATH_SIMULATOR = args.path_simulator
 
     # Use the controller to run & manage the simulator
-    sc = SimulatorController(args.map_path, args.start_pose)
+    sc = SimulatorController(args.map_path, args.start_pose, port=args.port)
     sc.run()
