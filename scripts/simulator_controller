@@ -35,6 +35,7 @@ _PATH_SIMULATOR = os.path.abspath('.')
 _SIMULATOR_PORT = 10000
 
 _ENVS_COMMAND = (
+    'cd "$ENVS_PATH" && '
     './IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
     '"$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full.json"'
     ' -windowed -ResX=1024 -ResY=720 -vulkan -game')
@@ -43,7 +44,8 @@ _DELETE_COMMAND = 'rm -f $FILENAME'
 _POSE_COMMAND = (
     'sed -i "0,/\\"pose\\":/{s/\\(\\"pose\\": \\)\\(.*\\)/\\1$START_POSE/}" '
     '$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full_config.json')
-_SIMULATOR_COMMAND = ('./bazelros run //apps/benchbot_simulator')
+_SIMULATOR_COMMAND = ('cd "$SIM_PATH" && '
+                      './bazelros run //apps/benchbot_simulator')
 
 _DEV_NULL = open(os.devnull, 'w')
 
@@ -68,23 +70,21 @@ class SimulatorController(object):
         def is_collided(self):
             return (subprocess.Popen(_FILE_COMMAND.replace(
                 "$FILENAME", _FILE_COLLISIONS),
-                                     shell="/bin/bash").wait() == 0)
+                                     shell=True,
+                                     executable="/bin/bash").wait() == 0)
 
         def is_dirty(self):
             return (subprocess.Popen(_FILE_COMMAND.replace(
                 "$FILENAME", _FILE_DIRTY_STATE),
-                                     shell="/bin/bash").wait() == 0)
+                                     shell=True,
+                                     executable="/bin/bash").wait() == 0)
 
         def is_running(self):
-            # return ((self._env_process is not None and
-            #          self._env_process.poll() is None) or
-            #         (self._simulator_process is not None and
-            #          self._simulator_process.poll() is None))
             try:
                 for t in _TOPICS:
                     rospy.wait_for_message(t[0], t[1], timeout=_TOPIC_TIMEOUT)
                 return True
-            except rospy.ROSException as e:
+            except rospy.ROSException:
                 return False
 
         def start(self):
@@ -97,33 +97,28 @@ class SimulatorController(object):
             if (subprocess.Popen(_POSE_COMMAND.replace(
                     "$START_POSE", self.start_pose).replace(
                         "$ISAAC_PATH", _PATH_ISAAC),
-                                 shell='/bin/bash').wait() != 0):
+                                 shell=True,
+                                 executable='/bin/bash').wait() != 0):
                 print("Failed to update the robot starting pose!")
                 return False
 
             # Start the simulator processes
-            temp = os.getcwd()
-            os.chdir(_PATH_ENVS)
-            self._env_process = subprocess.Popen(shlex.split(
-                _ENVS_COMMAND.replace("$MAP_PATH", self.map_path).replace(
-                    "$ISAAC_PATH", _PATH_ISAAC)),
+            self._env_process = subprocess.Popen(_ENVS_COMMAND.replace(
+                "$ENVS_PATH",
+                _PATH_ENVS).replace("$MAP_PATH", self.map_path).replace(
+                    "$ISAAC_PATH", _PATH_ISAAC),
+                                                 shell=True,
+                                                 executable='/bin/bash',
+                                                 stdout=_DEV_NULL,
+                                                 stderr=_DEV_NULL,
                                                  preexec_fn=os.setsid)
-            os.chdir(_PATH_SIMULATOR)
-            # env = os.environ
-            # env['PATH'] = '{}:{}'.format(env['PATH'], _PATH_SIMULATOR)
             self._simulator_process = subprocess.Popen(
-                shlex.split(_SIMULATOR_COMMAND),
+                _SIMULATOR_COMMAND.replace("$SIM_PATH", _PATH_SIMULATOR),
+                shell=True,
+                executable='/bin/bash',
                 stdout=_DEV_NULL,
                 stderr=_DEV_NULL,
                 preexec_fn=os.setsid)
-            os.chdir(temp)
-            # shell=True,
-            # executable='/bin/bash')
-            # stdout=_DEV_NULL,
-            # stderr=_DEV_NULL)
-            # self._env_process = subprocess.Popen('sleep 1000', shell=False)
-            # self._simulator_process = subprocess.Popen('sleep 1000',
-            #                                            shell=True)
 
             # Wait until the simulator stack has finished starting
             while not self.is_running():
@@ -138,24 +133,20 @@ class SimulatorController(object):
             # Stop all of the main processes
             ps = [self._env_process, self._simulator_process]
             for p in ps:
-                print('Sending signal to {}'.format(str(p)))
                 os.killpg(os.getpgid(p.pid), signal.SIGINT)
-
-            for p in reversed(ps):
-                print('Waiting for {}'.format(str(p)))
+            for p in ps:
                 p.wait()
                 p = None
-
-            if self.is_running():
-                print('Failed to stop, what a travesty')
 
             # Clear all temporary files
             subprocess.Popen(_DELETE_COMMAND.replace("$FILENAME",
                                                      _FILE_COLLISIONS),
-                             shell='/bin/bash').wait()
+                             shell=True,
+                             executable='/bin/bash').wait()
             subprocess.Popen(_DELETE_COMMAND.replace("$FILENAME",
                                                      _FILE_DIRTY_STATE),
-                             shell='/bin/bash').wait()
+                             shell=True,
+                             executable='/bin/bash').wait()
 
     def __init__(self,
                  map_path,
@@ -197,9 +188,7 @@ class SimulatorController(object):
         @simulator_flask.route('/restart', methods=['GET'])
         def __restart():
             try:
-                print("Before restart")
                 self._restart()
-                print("AFTER RESTART")
                 return __is_running()
             except Exception as e:
                 rospy.logerr(e)
@@ -220,6 +209,7 @@ class SimulatorController(object):
               self.simulator_address)
         if self.auto_start:
             print("Starting the simulator stack ... ", end="")
+            sys.stdout.flush()
             self._instance.start()
             print("Done")
         evt.wait()
@@ -243,8 +233,6 @@ def __valid_program_path(value, extra_files, name):
             "Path provided for '%s' does not exist: %s" % (name, value))
     for f in extra_files:
         if not os.path.exists(os.path.join(path, f)):
-            # TODO REMOVE HACK
-            return path
             raise argparse.ArgumentTypeError(
                 "Path provided for '%s' does not contain '%s': %s" %
                 (name, f, value))
@@ -302,16 +290,21 @@ if __name__ == '__main__':
     parser.add_argument('map_path')
     parser.add_argument('metadata_location')
     parser.add_argument('start_pose', type=__valid_pose)
-    parser.add_argument('--file-collisions', default='benchbot_collision')
-    # type=__valid_file)
-    parser.add_argument('--file-dirty-state', default='benchbot_dirty')
-    # type=__valid_file)
-    parser.add_argument('--path-envs', default=os.path.abspath('.'))
-    # type=__valid_envs_path)
-    parser.add_argument('--path-isaac', default=os.path.abspath('.'))
-    # type=__valid_isaac_path)
-    parser.add_argument('--path-simulator', default=os.path.abspath('.'))
-    # type=__valid_simulator_path)
+    parser.add_argument('--file-collisions',
+                        default='benchbot_collision',
+                        type=__valid_file)
+    parser.add_argument('--file-dirty-state',
+                        default='benchbot_dirty',
+                        type=__valid_file)
+    parser.add_argument('--path-envs',
+                        default=os.path.abspath('.'),
+                        type=__valid_envs_path)
+    parser.add_argument('--path-isaac',
+                        default=os.path.abspath('.'),
+                        type=__valid_isaac_path)
+    parser.add_argument('--path-simulator',
+                        default=os.path.abspath('.'),
+                        type=__valid_simulator_path)
     args = parser.parse_args()
     __valid_metadata_location(args.path_envs, args.metadata_location)
     __valid_map_path(args.map_path, args.path_envs, args.metadata_location)
