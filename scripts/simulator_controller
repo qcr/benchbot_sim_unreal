@@ -36,7 +36,7 @@ _ENVS_COMMAND = (
     'cd "$ENVS_PATH" && '
     './IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
     '"$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full.json"'
-    ' -windowed -ResX=1024 -ResY=720 -vulkan -game')
+    ' -windowed -ResX=960 -ResY=540 -vulkan -game')
 _FILE_COMMAND = '[ -f $FILENAME ]'
 _DELETE_COMMAND = 'rm -f $FILENAME'
 _POSE_COMMAND = (
