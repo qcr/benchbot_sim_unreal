@@ -19,6 +19,12 @@ class DepthPublisher : public isaac::alice::Codelet {
   ISAAC_PARAM(std::string, depth_channel_name, "/camera/depth/image_raw");
   ISAAC_PARAM(std::string, depth_frame_name, "robot_left_camera");
 
+  ISAAC_PARAM(std::string, info_channel_name, "/camera/depth/camera_info");
+  ISAAC_PARAM(double, info_fx, 480.0);
+  ISAAC_PARAM(double, info_fy, 480.0);
+  ISAAC_PARAM(double, info_center_x, 480.0);
+  ISAAC_PARAM(double, info_center_y, 270.0);
+
   ISAAC_PROTO_RX(DepthCameraProto, camera_depth);
 
  private:
