@@ -51,7 +51,7 @@ _TOPIC_TIMEOUT = 0.5
 _TOPICS = [('/camera/color/image_raw', Image),
            ('/camera/depth/image_raw', Image), ('/scan_laser', LaserScan),
            ('/tf', TFMessage)
-          ]  # NOTE: topic types must be imported (cbf doing 'magically')!
+          ]  # NOTE: topic types must be imported (cba doing 'magically')!
 
 
 class SimulatorController(object):

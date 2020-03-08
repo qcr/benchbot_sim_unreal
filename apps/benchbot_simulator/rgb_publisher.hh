@@ -20,6 +20,12 @@ class RgbPublisher : public isaac::alice::Codelet {
   ISAAC_PARAM(std::string, rgb_channel_name, "/camera/color/image_raw");
   ISAAC_PARAM(std::string, rgb_frame_name, "robot_left_camera");
 
+  ISAAC_PARAM(std::string, info_channel_name, "/camera/color/camera_info");
+  ISAAC_PARAM(double, info_fx, 480.0);
+  ISAAC_PARAM(double, info_fy, 480.0);
+  ISAAC_PARAM(double, info_center_x, 480.0);
+  ISAAC_PARAM(double, info_center_y, 270.0);
+
   ISAAC_PROTO_RX(ColorCameraProto, camera_rgb);
 
  private:
