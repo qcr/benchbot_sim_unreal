@@ -205,15 +205,27 @@ class SimulatorController(object):
                 success = False
             return flask.jsonify({'next_success': success})
 
-        @simulator_flask.route('/restart', methods=['GET'])
-        def __restart():
+        @simulator_flask.route('/reset', methods=['GET'])
+        def __reset():
+            # Resets the simulator in the current scene
             try:
                 self.restart()
                 success = self._instance.is_running()
             except Exception as e:
                 rospy.logerr(e)
                 success = False
-            return flask.jsonify({'restart_success': success})
+            return flask.jsonify({'reset_success': success})
+
+        @simulator_flask.route('/restart', methods=['GET'])
+        def __restart():
+            # Resets the simulator to the start of the FIRST scene
+            try:
+                self._map_selection = None
+                resp = __reset()
+                resp.data = resp.data.replace('reset', 'restart')
+                return resp
+            except Exception as e:
+                rospy.logerr(e)
 
         # Configure our server
         simulator_server = pywsgi.WSGIServer(
