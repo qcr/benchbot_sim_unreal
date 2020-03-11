@@ -191,6 +191,10 @@ class SimulatorController(object):
         def __is_running():
             return flask.jsonify({'is_running': self._instance.is_running()})
 
+        @simulator_flask.route('/map_selection_number', methods=['GET'])
+        def __map_selection_number():
+            return flask.jsonify({'map_selection_number': self._map_selection})
+
         @simulator_flask.route('/next', methods=['GET'])
         def __next():
             try:
