@@ -146,17 +146,29 @@ class SimulatorController(object):
                              shell=True,
                              executable='/bin/bash').wait()
 
-    def __init__(self, map_path, start_pose, port, auto_start=True):
+    def __init__(self, map_paths, start_poses, port, auto_start=True):
         self.auto_start = auto_start
 
         self.simulator_address = 'http://0.0.0.0:' + str(port)
 
-        self._instance = SimulatorController._SimulatorInstance(
-            map_path, start_pose)
+        self._map_selection = None
+        self._maps = zip(map_paths, start_poses)
 
-    def _restart(self):
-        self._instance.stop()
-        self._instance.start()
+        self._instance = None
+
+    def next(self):
+        # Stops any currently running simulators & moves to the next one
+        self.stop()
+        self._map_selection = (0 if self._map_selection is None or
+                               self._map_selection >= len(self._maps) - 1 else
+                               self._map_selection + 1)
+        self.start()
+
+    def restart(self):
+        # Restarts a simulator instance of the current map
+        if self._instance is not None:
+            self.stop()
+        self.start()
 
     def run(self):
         # Setup all of the simulator management functions
@@ -179,14 +191,29 @@ class SimulatorController(object):
         def __is_running():
             return flask.jsonify({'is_running': self._instance.is_running()})
 
+        @simulator_flask.route('/next', methods=['GET'])
+        def __next():
+            try:
+                if (self._map_selection is not None and
+                        self._map_selection >= len(self._maps) - 1):
+                    raise ValueError(
+                        "There is no next map; at the end of the list.")
+                self.next()
+                success = True
+            except Exception as e:
+                rospy.logerr(e)
+                success = False
+            return flask.jsonify({'next_success': success})
+
         @simulator_flask.route('/restart', methods=['GET'])
         def __restart():
             try:
-                self._restart()
-                return __is_running()
+                self.restart()
+                success = self._instance.is_running()
             except Exception as e:
                 rospy.logerr(e)
-            return flask.jsonify({'restart_success': True})
+                success = False
+            return flask.jsonify({'restart_success': success})
 
         # Configure our server
         simulator_server = pywsgi.WSGIServer(
@@ -204,12 +231,26 @@ class SimulatorController(object):
         if self.auto_start:
             print("Starting the simulator stack ... ", end="")
             sys.stdout.flush()
-            self._instance.start()
+            self.start()
             print("Done")
         evt.wait()
         print("\nShutting down simulator & exiting ...")
         simulator_server.stop()
-        self._instance.stop()
+        self.stop()
+        print("Stopped")
+
+    def start(self):
+        # Starts the currently selected simulator
+        if self._map_selection is None:
+            self._map_selection = 0
+        self._instance = SimulatorController._SimulatorInstance(
+            *self._maps[self._map_selection])
+        self._instance.start()
+
+    def stop(self):
+        # Stops any running simulator instance
+        if self._instance is not None:
+            self._instance.stop()
 
 
 def __valid_file(value):
@@ -242,6 +283,10 @@ def __valid_envs_path(value):
                                 "envs")
 
 
+def __valid_map_paths(value):
+    return value.split(':')
+
+
 def __valid_map_path(map_path, envs_path, metadata_location):
     valid_paths = [
         yaml.safe_load(open(f))['map_path'] for f in glob.glob(
@@ -262,12 +307,15 @@ def __valid_metadata_location(envs_path, metadata_location):
     return metadata_location
 
 
-def __valid_pose(value):
+def __valid_poses(value):
     # TODO perform a much more robust check for pose validity...
-    if not re.search(r'\[[0-9\.\-e, ^\]]*\]', value):
-        raise argparse.ArgumentTypeError(
-            "Start pose is not in expected 7-field vector format: %s" % value)
-    return value
+    values = value.split(':')
+    for p in values:
+        if not re.search(r'\[[0-9\.\-e, ^\]]*\]', value):
+            raise argparse.ArgumentTypeError(
+                "Start pose is not in expected 7-field vector format: %s" %
+                value)
+    return values
 
 
 def __valid_simulator_path(value):
@@ -281,9 +329,9 @@ if __name__ == '__main__':
     # Parse input arguments sanely
     parser = argparse.ArgumentParser(
         description="Controller for the BenchBot simulator stack")
-    parser.add_argument('map_path')
     parser.add_argument('metadata_location')
-    parser.add_argument('start_pose', type=__valid_pose)
+    parser.add_argument('map_paths', type=__valid_map_paths)
+    parser.add_argument('start_poses', type=__valid_poses)
     parser.add_argument('--file-collisions',
                         default='benchbot_collision',
                         type=__valid_file)
@@ -302,7 +350,8 @@ if __name__ == '__main__':
     parser.add_argument('--port', type=int, required=True)
     args = parser.parse_args()
     __valid_metadata_location(args.path_envs, args.metadata_location)
-    __valid_map_path(args.map_path, args.path_envs, args.metadata_location)
+    for m in args.map_paths:
+        __valid_map_path(m, args.path_envs, args.metadata_location)
 
     # Update global setttings with supplied values (this is pretty yuck...)
     _FILE_COLLISIONS = args.file_collisions
@@ -312,5 +361,5 @@ if __name__ == '__main__':
     _PATH_SIMULATOR = args.path_simulator
 
     # Use the controller to run & manage the simulator
-    sc = SimulatorController(args.map_path, args.start_pose, port=args.port)
+    sc = SimulatorController(args.map_paths, args.start_poses, port=args.port)
     sc.run()
