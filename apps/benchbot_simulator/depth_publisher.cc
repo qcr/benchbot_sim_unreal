@@ -5,13 +5,17 @@
 #include "image_transport/image_transport.h"
 #include "messages/camera.hpp"
 #include "ros/ros.h"
+#include "sensor_msgs/CameraInfo.h"
 
 namespace benchbot {
 
 struct DepthPublisher::RosData {
   ros::NodeHandle nh;
-  image_transport::Publisher pub;
+  image_transport::Publisher pub_depth;
+  ros::Publisher pub_info;
   image_transport::ImageTransport it = image_transport::ImageTransport(nh);
+
+  sensor_msgs::CameraInfo info_msg;
 };
 
 void DepthPublisher::start() {
@@ -21,7 +25,35 @@ void DepthPublisher::start() {
   // Initialise all of the ROS data we are going to need
   ros_data_ = std::make_unique<RosData>();
   ros_data_->it = image_transport::ImageTransport(ros_data_->nh);
-  ros_data_->pub = ros_data_->it.advertise(get_depth_channel_name(), 2);
+  ros_data_->pub_depth = ros_data_->it.advertise(get_depth_channel_name(), 2);
+  ros_data_->pub_info = ros_data_->nh.advertise<sensor_msgs::CameraInfo>(
+      get_info_channel_name(), 1);
+
+  // Setup our static camera_info message
+  ros_data_->info_msg.header.frame_id = get_depth_frame_name();
+  ros_data_->info_msg.width = get_info_center_x() * 2;
+  ros_data_->info_msg.height = get_info_center_y() * 2;
+  ros_data_->info_msg.K = {get_info_fx(),
+                           0,
+                           get_info_center_x(),
+                           0,
+                           get_info_fy(),
+                           get_info_center_y(),
+                           0,
+                           0,
+                           1};
+  ros_data_->info_msg.P = {get_info_fx(),
+                           0,
+                           get_info_center_x(),
+                           0,
+                           0,
+                           get_info_fy(),
+                           get_info_center_y(),
+                           0,
+                           0,
+                           0,
+                           1,
+                           0};
 
   // Configure the codelet to only tick when we receive a new camera message
   // from the simulator
@@ -29,7 +61,8 @@ void DepthPublisher::start() {
 }
 
 void DepthPublisher::stop() {
-  ros_data_->pub.shutdown();
+  ros_data_->pub_depth.shutdown();
+  ros_data_->pub_info.shutdown();
   ros_data_ = nullptr;
 }
 
@@ -59,7 +92,11 @@ void DepthPublisher::tick() {
         cv_bridge::CvImage(std_msgs::Header(), "32FC1", depth_cv).toImageMsg();
     depth_ros->header.stamp = msg_time;
     depth_ros->header.frame_id = get_depth_frame_name();
-    ros_data_->pub.publish(depth_ros);
+    ros_data_->pub_depth.publish(depth_ros);
+
+    // Publish static camera_info for the RGB sensor
+    ros_data_->info_msg.header.stamp = msg_time;
+    ros_data_->pub_info.publish(ros_data_->info_msg);
   } else {
     LOG_ERROR("Lost connection to ROS master; should shut down");
   }
