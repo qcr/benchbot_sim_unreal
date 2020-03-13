@@ -74,3 +74,20 @@ u@pc:~$ scripts/simulator_controller \
 
 Look inside `<precompiled_envs_location>/.benchbot_data_files/` for map metadata including start poses & map names.
 
+## Interacting with the BenchBot Simulator Controller
+
+The BenchBot Simulator Controller wrapper script `scripts/simulator_controller` exposes a RESTful API for getting data about simulator state, & managing the lifecycle of running simulator instances. They are currently all implemented as `GET` requests, which should probably be tweaked in the future.
+
+The API includes the following commands:
+
+| Request Route | Response JSON Format | Description |
+| --------------|:---------------:|-------------|
+| `/`           | `{Hello, I am the BenchBot simulator}` | Arbitrary response to confirm connection |
+| `/is_collided` | `{'is_collided': True|False}` | Goes to `True` once the robot has collided with an obstacle (never returns to false after that point) |
+| `/is_dirty` | `{'is_dirty': True|False}` | Goes to `True` once the robot has moved for the first time |
+| `/is_running` | `{'is_running': True|False}` | Returns `True` if all simulator ROS topics are alive |
+| `/map_selection_number` | `{'map_selection_number': int}` | Returns the currently running map number out of the list of maps provided on startup |
+| `/next` | `{'next_success': True|False}` | Kills any currently running simulator & starts the *next* simulated environment from the list provided on startup |
+| `/reset` | `{reset_success: True|False}` | Kills the currently running simulator & restarts the in the *same* simulated environment |
+| `/restart` | `{restart_success: True|False}` | Kills the currently running simulator & restarts the in the *first* simulated environment |
+
