@@ -83,11 +83,11 @@ The API includes the following commands:
 | Request Route | Response JSON Format | Description |
 | --------------|:---------------:|-------------|
 | `/`           | `{Hello, I am the BenchBot simulator}` | Arbitrary response to confirm connection |
-| `/is_collided` | `{'is_collided': True|False}` | Goes to `True` once the robot has collided with an obstacle (never returns to false after that point) |
-| `/is_dirty` | `{'is_dirty': True|False}` | Goes to `True` once the robot has moved for the first time |
-| `/is_running` | `{'is_running': True|False}` | Returns `True` if all simulator ROS topics are alive |
+| `/is_collided` | `{'is_collided': True\|False}` | Goes to `True` once the robot has collided with an obstacle (never returns to false after that point) |
+| `/is_dirty` | `{'is_dirty': True\|False}` | Goes to `True` once the robot has moved for the first time |
+| `/is_running` | `{'is_running': True\|False}` | Returns `True` if all simulator ROS topics are alive |
 | `/map_selection_number` | `{'map_selection_number': int}` | Returns the currently running map number out of the list of maps provided on startup |
-| `/next` | `{'next_success': True|False}` | Kills any currently running simulator & starts the *next* simulated environment from the list provided on startup |
-| `/reset` | `{reset_success: True|False}` | Kills the currently running simulator & restarts the in the *same* simulated environment |
-| `/restart` | `{restart_success: True|False}` | Kills the currently running simulator & restarts the in the *first* simulated environment |
+| `/next` | `{'next_success': True\|False}` | Kills any currently running simulator & starts the *next* simulated environment from the list provided on startup |
+| `/reset` | `{reset_success: True\|False}` | Kills the currently running simulator & restarts the in the *same* simulated environment |
+| `/restart` | `{restart_success: True\|False}` | Kills the currently running simulator & restarts the in the *first* simulated environment |
 
