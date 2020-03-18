@@ -1,4 +1,4 @@
-**NOTE: this software is part of the BenchBot Software Stack, and not intended to be run in isolation. For a working BenchBot system, please install the BenchBot Software Stack by following the instructions [here](https://github.com/RoboticVisionOrg/benchbot).**
+**NOTE: this software is part of the BenchBot software stack, and not intended to be run in isolation. For a working BenchBot system, please install the BenchBot software stack by following the instructions [here](https://github.com/RoboticVisionOrg/benchbot).**
 
 # BenchBot Simulator
 
@@ -11,7 +11,7 @@ BenchBot simulator provides direct access to the following data on the simulated
 - RGB images from the top camera (`/camera/color/image_raw`)
 - Camera information for RGB images from the top camera (`/camera/color/camera_info`)
 - Depth images from the top camera (`/camera/depth/image_raw`)
-- Camera information for depth images from the top camera (`/camera/color/camera_info`)
+- Camera information for depth images from the top camera (`/camera/depth/camera_info`)
 - Laserscan data from the LiDAR  (`/scan_laser`)
 - Raw odometry data (`/odom`)
 - A full transform tree (`/tf`)
@@ -24,9 +24,9 @@ Direct control of the robot is also facilitated via:
 
 **Please see the note at the top of the page; installation of BenchBot Simulator in isolation is generally not what you want!**
 
-If you are sure you need to install the simulator in isolation, the following steps should be required. Note there are significant number of driver & software requirements for your system:
+If you are sure you need to install the simulator in isolation, the following steps should be sufficient. Note there are a significant number of driver & software requirements for your system:
 
-1. Download version 2019.2 of the Isaac SDK & Isaac SIM (*not* NavSim) if creating your own environments from the [Nvidia site](https://developer.nvidia.com/isaac/downloads). You will have to create / sign in to an Nvidia developer account, and look in the "Archive" drop down for version 2019.2.
+1. Download version 2019.2 of the Isaac SDK from the [Nvidia site](https://developer.nvidia.com/isaac/downloads). If creating your own environments, also download version 2019.2 of Isaac SIM (*not* NavSim). You will have to create / sign in to an Nvidia developer account, and look in the "Archive" drop down for version 2019.2.
 
 2. Either setup your system with Isaac SIM, or download our environments: 
     
@@ -36,7 +36,7 @@ If you are sure you need to install the simulator in isolation, the following st
 
 3. Install the Isaac SDK by following the instructions [here](https://docs.nvidia.com/isaac/archive/2019.2/doc/setup.html).
 
-4. Clone the BenchBot simulator, apply our patches to installed Isaac SDK, & build the simulator using the Bazel wrapper script (ensure the environment variable `ISAAC_SDK_PATH` is set to where you installed Isaac SDK):
+4. Clone the BenchBot simulator, apply our patches to the installed Isaac SDK, & build the simulator using the Bazel wrapper script (ensure the environment variable `ISAAC_SDK_PATH` is set to where you installed Isaac SDK):
     ```
     u@pc:~$ git clone https://github.com/RoboticVisionOrg/benchbot_simulator && cd benchbot_simulator
     u@pc:~$ .isaac_patches/apply_patches
@@ -62,7 +62,7 @@ Running the BenchBot simulator requires two parts:
     u@pc:~$ ./bazelros run //apps/benchbot_simulator
     ```
 
-Alternatively, you can run everything through the wrapper script which controls the lifecycle of the entire simulator stack via a RESTful API (only or precompiled environments are supported currently):
+Alternatively, you can run everything through the wrapper script which controls the lifecycle of the entire simulator stack via a RESTful API. Only precompiled environments are supported out-of-the-box (some minor tweaks of `_ENVS_COMMAND` should be sufficient to get the controller working with custom environments):
 ```
 u@pc:~$ scripts/simulator_controller \
     --path-envs <precompiled_envs_location> \
@@ -78,16 +78,16 @@ Look inside `<precompiled_envs_location>/.benchbot_data_files/` for map metadata
 
 The BenchBot Simulator Controller wrapper script `scripts/simulator_controller` exposes a RESTful API for getting data about simulator state, & managing the lifecycle of running simulator instances. They are currently all implemented as `GET` requests, which should probably be tweaked in the future.
 
-The API includes the following commands:
+The RESTful API includes the following commands:
 
 | Request Route | Response JSON Format | Description |
 | --------------|:---------------:|-------------|
-| `/`           | `{Hello, I am the BenchBot simulator}` | Arbitrary response to confirm connection |
-| `/is_collided` | `{'is_collided': True\|False}` | Goes to `True` once the robot has collided with an obstacle (never returns to false after that point) |
-| `/is_dirty` | `{'is_dirty': True\|False}` | Goes to `True` once the robot has moved for the first time |
-| `/is_running` | `{'is_running': True\|False}` | Returns `True` if all simulator ROS topics are alive |
-| `/map_selection_number` | `{'map_selection_number': int}` | Returns the currently running map number out of the list of maps provided on startup |
-| `/next` | `{'next_success': True\|False}` | Kills any currently running simulator & starts the *next* simulated environment from the list provided on startup |
-| `/reset` | `{reset_success: True\|False}` | Kills the currently running simulator & restarts the in the *same* simulated environment |
-| `/restart` | `{restart_success: True\|False}` | Kills the currently running simulator & restarts the in the *first* simulated environment |
+| `/`           | <pre>`Hello, I am the BenchBot simulator`</pre> | Arbitrary response to confirm connection |
+| `/is_collided` | <pre>{'is_collided': True\|False}</pre> | Goes to `True` once the robot has collided with an obstacle (never returns to false after that point) |
+| `/is_dirty` | <pre>{'is_dirty': True\|False}</pre> | Goes to `True` once the robot has moved for the first time |
+| `/is_running` | <pre>{'is_running': True\|False}</pre> | Returns `True` if all simulator ROS topics are alive |
+| `/map_selection_number` | <pre>{'map_selection_number': int}</pre> | Returns the currently running map number out of the list of maps provided on startup |
+| `/next` | <pre>{'next_success': True\|False}</pre> | Kills any currently running simulator & starts the *next* simulated environment from the list provided on startup |
+| `/reset` | <pre>{reset_success: True\|False}</pre> | Kills the currently running simulator & restarts the *same* simulated environment |
+| `/restart` | <pre>{restart_success: True\|False}</pre> | Kills the currently running simulator & restarts the *first* simulated environment |
 
