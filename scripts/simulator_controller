@@ -236,9 +236,9 @@ class SimulatorController(object):
             re.split('http[s]?://', self.simulator_address)[-1],
             simulator_flask)
         evt = event.Event()
-        signal(signal.SIGINT, evt.set)
-        signal(signal.SIGQUIT, evt.set)
-        signal(signal.SIGTERM, evt.set)
+        signal.signal(signal.SIGINT, evt.set)
+        signal.signal(signal.SIGQUIT, evt.set)
+        signal.signal(signal.SIGTERM, evt.set)
 
         # Run the server & start the simulator stack
         simulator_server.start()
