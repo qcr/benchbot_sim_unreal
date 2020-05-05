@@ -101,15 +101,15 @@ class SimulatorController(object):
                 return False
 
             # Start the simulator processes
-            self._env_process = subprocess.Popen(_ENVS_COMMAND.replace(
-                "$ENVS_PATH",
-                _PATH_ENVS).replace("$MAP_PATH", self.map_path).replace(
-                    "$ISAAC_PATH", _PATH_ISAAC),
-                                                 shell=True,
-                                                 executable='/bin/bash',
-                                                 stdout=_DEV_NULL,
-                                                 stderr=_DEV_NULL,
-                                                 preexec_fn=os.setsid)
+            self._env_process = subprocess.Popen(
+                _ENVS_COMMAND.replace("$ENVS_PATH", _PATH_ENVS).replace(
+                    "$MAP_PATH",
+                    self.map_path).replace("$ISAAC_PATH", _PATH_ISAAC),
+                shell=True,
+                executable='/bin/bash',
+                # stdout=_DEV_NULL,
+                # stderr=_DEV_NULL,
+                preexec_fn=os.setsid)
             self._simulator_process = subprocess.Popen(
                 _SIMULATOR_COMMAND.replace("$SIM_PATH", _PATH_SIMULATOR),
                 shell=True,
@@ -121,6 +121,10 @@ class SimulatorController(object):
             # Wait until the simulator stack has finished starting
             while not self.is_running():
                 time.sleep(0.1)
+                if self._env_process.poll() is not None:
+                    raise RuntimeError("Simulator instance crashed!")
+                if self._simulator_process.poll() is not None:
+                    raise RuntimeError("BenchBot Isaac codelets crashed!")
             return True
 
         def stop(self):
