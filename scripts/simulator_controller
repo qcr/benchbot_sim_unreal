@@ -28,15 +28,13 @@ from tf2_msgs.msg import TFMessage
 _FILE_COLLISIONS = os.path.abspath('benchbot_collision')
 _FILE_DIRTY_STATE = os.path.abspath('benchbot_dirty')
 
+_LOG_SIMULATOR = open('/tmp/benchbot_simulator.log', 'w')
+_LOG_UNREAL = open('/tmp/benchbot_unreal.log', 'w')
+
 _PATH_ENVS = os.path.abspath('.')
 _PATH_ISAAC = os.path.abspath('.')
 _PATH_SIMULATOR = os.path.abspath('.')
 
-_ENVS_COMMAND = (
-    'cd "$ENVS_PATH" && '
-    './IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
-    '"$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full.json"'
-    ' -windowed -ResX=960 -ResY=540 -vulkan -game')
 _FILE_COMMAND = '[ -f $FILENAME ]'
 _DELETE_COMMAND = 'rm -f $FILENAME'
 _POSE_COMMAND = (
@@ -44,9 +42,13 @@ _POSE_COMMAND = (
     '$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full_config.json')
 _SIMULATOR_COMMAND = ('cd "$SIM_PATH" && '
                       './bazelros run //apps/benchbot_simulator')
+_UNREAL_COMMAND = (
+    'cd "$ENVS_PATH" && '
+    './IsaacSimProject.sh "$MAP_PATH" -isaac_sim_config_json='
+    '"$ISAAC_PATH/apps/carter/carter_sim/bridge_config/carter_full.json"'
+    ' -windowed -ResX=960 -ResY=540 -vulkan -game')
 
-_DEV_NULL = open(os.devnull, 'w')
-
+_STARTUP_TIMEOUT = 60
 _TOPIC_TIMEOUT = 0.5
 _TOPICS = [('/camera/color/image_raw', Image),
            ('/camera/depth/image_raw', Image), ('/scan_laser', LaserScan),
@@ -62,8 +64,8 @@ class SimulatorController(object):
             self.map_path = map_path
             self.start_pose = start_pose
 
-            self._env_process = None
             self._simulator_process = None
+            self._unreal_process = None
 
         def is_collided(self):
             return (subprocess.Popen(_FILE_COMMAND.replace(
@@ -101,26 +103,51 @@ class SimulatorController(object):
                 return False
 
             # Start the simulator processes
-            self._env_process = subprocess.Popen(_ENVS_COMMAND.replace(
+            self._unreal_process = subprocess.Popen(_UNREAL_COMMAND.replace(
                 "$ENVS_PATH",
                 _PATH_ENVS).replace("$MAP_PATH", self.map_path).replace(
                     "$ISAAC_PATH", _PATH_ISAAC),
-                                                 shell=True,
-                                                 executable='/bin/bash',
-                                                 stdout=_DEV_NULL,
-                                                 stderr=_DEV_NULL,
-                                                 preexec_fn=os.setsid)
+                                                    shell=True,
+                                                    executable='/bin/bash',
+                                                    stdout=_LOG_UNREAL,
+                                                    stderr=_LOG_UNREAL,
+                                                    preexec_fn=os.setsid)
             self._simulator_process = subprocess.Popen(
                 _SIMULATOR_COMMAND.replace("$SIM_PATH", _PATH_SIMULATOR),
                 shell=True,
                 executable='/bin/bash',
-                stdout=_DEV_NULL,
-                stderr=_DEV_NULL,
+                stdout=_LOG_SIMULATOR,
+                stderr=_LOG_SIMULATOR,
                 preexec_fn=os.setsid)
 
             # Wait until the simulator stack has finished starting
+            start_time = time.time()
+            failed_unreal = False
+            failed_simulator = False
             while not self.is_running():
                 time.sleep(0.1)
+                if time.time() - start_time > _STARTUP_TIMEOUT:
+                    failed_unreal = True
+                    print("\nSIMULATOR HAS NOT STARTED AFTER %ss (ASSUMING AN "
+                          "UNREAL ENGINE CRASH)" % _STARTUP_TIMEOUT)
+                if self._unreal_process.poll() is not None:
+                    failed_unreal = True
+                if self._simulator_process.poll() is not None:
+                    failed_simulator = True
+                if failed_unreal:
+                    print("\nUNREAL GAME ENGINE INSTANCE CRASHED. "
+                          "DUMPING OUTPUT:")
+                    _LOG_UNREAL.close()
+                    with open(_LOG_UNREAL.name, 'r') as f:
+                        print(f.read())
+                    raise RuntimeError("Unreal Game Engine instance crashed!")
+                if failed_simulator:
+                    print("\nBENCHBOT ISAAC SIMULATOR CRASHED. "
+                          "DUMPING OUTPUT:")
+                    _LOG_SIMULATOR.close()
+                    with open(_LOG_SIMULATOR.name, 'r') as f:
+                        print(f.read())
+                    raise RuntimeError("BenchBot Isaac Simulator crashed!")
             return True
 
         def stop(self):
@@ -129,7 +156,7 @@ class SimulatorController(object):
                 return False
 
             # Stop all of the main processes
-            ps = [self._env_process, self._simulator_process]
+            ps = [self._unreal_process, self._simulator_process]
             for p in ps:
                 os.killpg(os.getpgid(p.pid), signal.SIGINT)
             for p in ps:
@@ -295,7 +322,7 @@ def __valid_isaac_path(value):
 
 
 def __valid_envs_path(value):
-    return __valid_program_path(value, [_ENVS_COMMAND.split(' ', 4)[3]],
+    return __valid_program_path(value, [_UNREAL_COMMAND.split(' ', 4)[3]],
                                 "envs")
 
 
