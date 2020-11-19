@@ -3,7 +3,6 @@
     "modules": [
         "apps/benchbot_simulator:depth_publisher",
         "apps/benchbot_simulator:ground_truth_declarer",
-        "apps/benchbot_simulator:localisation_publisher",
         "apps/benchbot_simulator:lidar_publisher",
         "apps/benchbot_simulator:odom_publisher",
         "apps/benchbot_simulator:rgb_publisher",
