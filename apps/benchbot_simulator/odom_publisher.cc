@@ -4,6 +4,8 @@
 #include "nav_msgs/Odometry.h"
 #include "ros/ros.h"
 #include "tf/transform_broadcaster.h"
+#include "messages/math.hpp"
+#include "engine/core/math/pose3.hpp"
 
 template <typename T>
 inline int _sign(const T num) {
@@ -55,8 +57,9 @@ void OdomPublisher::tick() {
         tf::Vector3(odom_proto.getOdomTRobot().getTranslation().getX(),
                     odom_proto.getOdomTRobot().getTranslation().getY(), 0));
     ros_data_->tf_broadcaster.sendTransform(
-        tf::StampedTransform(odom_tf, msg_time, odom_proto.getOdometryFrame(),
-                             odom_proto.getRobotFrame()));
+        tf::StampedTransform(odom_tf, msg_time, get_ros_odom_frame(),
+                             get_ros_robot_frame()));
+    // std::cout << get_ros_robot_frame() << std::endl;
 
     // Send an Odometry message
     nav_msgs::Odometry odom_ros;
@@ -75,8 +78,24 @@ void OdomPublisher::tick() {
     odom_ros.twist.twist.angular.z = odom_proto.getAngularSpeed();
     // TODO covariance???
     ros_data_->pub.publish(odom_ros);
+
+    // Publish map->odom in tf tree to ensure map->odom->robot gives gt_pose
+    // Check if we have robot pose gt data required for publishing odom pose in gt tree
+    const std::optional<isaac::Pose3d> gt_world_to_robot(node()->pose().tryGet(
+            get_gt_world_frame(), get_gt_robot_frame(), getTickTime()));
+    if (!gt_world_to_robot) {
+      return;
+    }
+    // Calculate and publish transform
+    // TODO could probably be condensed
+    isaac::Pose2d odom_to_robot_2d = isaac::FromProto(odom_proto.getOdomTRobot());
+    isaac::Pose3d odom_to_robot_3d = isaac::Pose3d::FromPose2XY(odom_to_robot_2d);
+    ros_data_->tf_broadcaster.sendTransform(tf::StampedTransform(
+      pose3d_to_transform(*gt_world_to_robot * odom_to_robot_3d.inverse()),
+      msg_time, get_ros_world_frame(), get_ros_odom_frame()));
+
   } else {
-    LOG_ERROR("Failed to get an RGB image from the proto");
+    LOG_ERROR("ROS is not ok");
   }
 }
 

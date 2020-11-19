@@ -15,9 +15,11 @@ class TfPublisher : public isaac::alice::Codelet {
   void stop() override;
   void tick() override;
 
-  ISAAC_PARAM(std::string, tf_base_frame, "base_link");
+  ISAAC_PARAM(std::string, isaac_base_frame, "base_link");
+  ISAAC_PARAM(std::string, ros_base_frame, "");
 
-  ISAAC_PARAM(std::vector<std::string>, tf_frames, {});
+  ISAAC_PARAM(std::vector<std::string>, isaac_child_frames, {});
+  ISAAC_PARAM(std::vector<std::string>, ros_child_frames, {});
 
  private:
   struct RosData;
