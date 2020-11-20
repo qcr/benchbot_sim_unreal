@@ -51,6 +51,16 @@ isaac_cc_module(
     )
 
 isaac_cc_module(
+    name = "segment_publisher",
+    srcs = ["segment_publisher.cc"],
+    hdrs = ["segment_publisher.hh", "helpers.hh"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//ros:ros",
+        ]
+    )
+
+isaac_cc_module(
     name = "tf_publisher",
     srcs = ["tf_publisher.cc"],
     hdrs = ["tf_publisher.hh", "helpers.hh"],
@@ -87,6 +97,7 @@ isaac_app(
         "//apps/benchbot_simulator:lidar_publisher",
         "//apps/benchbot_simulator:odom_publisher",
         "//apps/benchbot_simulator:rgb_publisher",
+        "//apps/benchbot_simulator:segment_publisher",
         "//apps/benchbot_simulator:tf_publisher",
         "//apps/benchbot_simulator:twist_subscriber",
         "@com_nvidia_isaac//packages/navigation",

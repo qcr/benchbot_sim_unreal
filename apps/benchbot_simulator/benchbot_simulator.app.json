@@ -8,6 +8,7 @@
         "apps/benchbot_simulator:rgb_publisher",
         "apps/benchbot_simulator:tf_publisher",
         "apps/benchbot_simulator:twist_subscriber",
+        "apps/benchbot_simulator:segment_publisher",
         "external/com_nvidia_isaac/packages/map",
         "external/com_nvidia_isaac/packages/navigation",
         "external/com_nvidia_isaac/packages/perception",
@@ -83,6 +84,18 @@
                 ]
             },
             {
+                "name": "segment_publisher",
+                "components": [{
+                        "name": "message_ledger",
+                        "type": "isaac::alice::MessageLedger"
+                    },
+                    {
+                        "name": "segment_publisher",
+                        "type": "benchbot::SegmentPublisher"
+                    }
+                ]
+            },
+            {
                 "name": "tf_publisher",
                 "components": [{
                         "name": "message_ledger",
@@ -118,6 +131,10 @@
             {
                 "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/ColorSensor",
                 "target": "rgb_publisher/rgb_publisher/camera_rgb"
+            },
+            {
+                "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/SegmentationSensor",
+                "target": "rgb_publisher/rgb_publisher/camera_segment"
             },
             {
                 "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
