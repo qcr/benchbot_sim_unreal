@@ -36,7 +36,7 @@ void SegmentPublisher::start() {
   ros_data_ = std::make_unique<RosData>();
   ros_data_->pub_info = ros_data_->nh.advertise<sensor_msgs::CameraInfo>(
       get_info_channel_name(), 1);
-  ros_data_->pub_segment = ros_data_->nh.advertise<isaac_ros_msgs::isaac_segment_img>(
+  ros_data_->pub_segment = ros_data_->nh.advertise<benchbot_msgs::isaac_segment_img>(
       get_segment_channel_name(), 2);
 
   // Setup our static camera_info message
