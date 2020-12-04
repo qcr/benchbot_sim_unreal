@@ -134,7 +134,7 @@
             },
             {
                 "source": "LeftCameraSubscriber/isaac.alice.TcpSubscriber/SegmentationSensor",
-                "target": "rgb_publisher/rgb_publisher/camera_segment"
+                "target": "segment_publisher/segment_publisher/camera_segment"
             },
             {
                 "source": "range_scan_flattening/isaac.perception.RangeScanFlattening/flatscan",
