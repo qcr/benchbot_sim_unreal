@@ -16,9 +16,7 @@ class SegmentPublisher : public isaac::alice::Codelet {
   void stop() override;
   void tick() override;
 
-  ISAAC_PARAM(std::string, segment_label_channel_name, "/camera/segment/label_image_raw");
-  ISAAC_PARAM(std::string, segment_instance_channel_name, "/camera/segment/instance_image_raw");
-  ISAAC_PARAM(std::string, segment_label_list_channel_name, "/camera/segment/label_list");
+  ISAAC_PARAM(std::string, segment_channel_name, "/camera/segment/segment_msg");
   ISAAC_PARAM(std::string, segment_frame_name, "robot_left_camera");
 
   ISAAC_PARAM(std::string, info_channel_name, "/camera/segment/camera_info");
