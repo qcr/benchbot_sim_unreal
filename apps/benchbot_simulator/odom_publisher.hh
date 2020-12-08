@@ -18,8 +18,14 @@ class OdomPublisher : public isaac::alice::Codelet {
 
   ISAAC_PROTO_RX(Odometry2Proto, robot_odom);
 
-  ISAAC_PARAM(std::string, odom_channel_name, "/odom")
-  ISAAC_PARAM(std::string, tf_base_frame, "base_link");
+  ISAAC_PARAM(std::string, odom_channel_name, "/odom");
+  ISAAC_PARAM(std::string, ros_robot_frame, "base_link");
+
+  ISAAC_PARAM(std::string, gt_robot_frame, "gt_robot");
+  ISAAC_PARAM(std::string, gt_world_frame, "gt_world");
+
+  ISAAC_PARAM(std::string, ros_odom_frame, "odom");
+  ISAAC_PARAM(std::string, ros_world_frame, "map");
 
  private:
   struct RosData;

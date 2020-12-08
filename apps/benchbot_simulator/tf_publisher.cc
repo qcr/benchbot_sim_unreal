@@ -32,14 +32,29 @@ void TfPublisher::tick() {
     std::optional<isaac::Pose3d> robot_to_frame;
     const ros::Time ros_time = ros::Time::now();
 
+    // Determine if the ros base frame is the same as isaac (default) or defined by user
+    std::string ros_base_frame = (get_ros_base_frame().empty()) ? get_isaac_base_frame() : get_ros_base_frame();
+    
     // Get all requested tfs
-    for (const std::string &s : get_tf_frames()) {
+    for (unsigned int idx = 0; idx < get_isaac_child_frames().size(); idx++){
       robot_to_frame =
-          node()->pose().tryGet(get_tf_base_frame(), s, getTickTime());
+          node()->pose().tryGet(get_isaac_base_frame(), get_isaac_child_frames()[idx], getTickTime());
+      
+      // Determine if the ros child frame is the same as isaac (default) or if it has been defined by user
+      // NOTE if a user gives fewer names than there are available, system will assume default after 
+      // all child frame names have been used up in order (empty string indicates use default)
+      std::string ros_child_frame;
+      if (idx < get_ros_child_frames().size()){
+        ros_child_frame = (get_ros_child_frames()[idx].empty()) ? get_isaac_child_frames()[idx] : get_ros_child_frames()[idx];
+      } else {
+        ros_child_frame = get_isaac_child_frames()[idx];
+      }
+      
+      // Publish the tf
       if (robot_to_frame) {
         ros_data_->tf_broadcaster.sendTransform(
             tf::StampedTransform(pose3d_to_transform(*robot_to_frame), ros_time,
-                                 get_tf_base_frame(), s));
+                                 ros_base_frame, ros_child_frame));
         // LOG_DEBUG("Published tf for: %s -> %s", get_tf_base_frame().c_str(),
         //           s.c_str());
       }
