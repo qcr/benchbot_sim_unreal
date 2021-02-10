@@ -37,7 +37,7 @@ rosinstall_generator \
     $packages > ws.rosinstall
 wstool init -j8 src ws.rosinstall
 
-git clone --branch develop https://github.com/RoboticVisionOrg/benchbot_msgs.git src/benchbot_msgs
+git clone --branch develop https://github.com/qcr/benchbot_msgs.git src/benchbot_msgs
 
 catkin config \
     --install \
