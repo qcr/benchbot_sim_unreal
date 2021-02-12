@@ -1,4 +1,4 @@
-#include "benchbot_msgs/SegmentImage.h"
+#include "benchbot_msgs/SegmentImages.h"
 #include "cv_bridge/cv_bridge.h"
 #include "helpers.hh"
 #include "image_transport/image_transport.h"
@@ -37,8 +37,9 @@ void SegmentPublisher::start() {
   ros_data_ = std::make_unique<RosData>();
   ros_data_->pub_info = ros_data_->nh.advertise<sensor_msgs::CameraInfo>(
       get_info_channel_name(), 1);
-  ros_data_->pub_segment = ros_data_->nh.advertise<benchbot_msgs::SegmentImage>(
-      get_segment_channel_name(), 2);
+  ros_data_->pub_segment =
+      ros_data_->nh.advertise<benchbot_msgs::SegmentImages>(
+          get_segment_channel_name(), 2);
 
   // Setup our static camera_info message
   ros_data_->info_msg.header.frame_id = get_segment_frame_name();
@@ -162,7 +163,7 @@ void SegmentPublisher::tick() {
     }
 
     // Form the ROS message
-    benchbot_msgs::SegmentImage segment_msg;
+    benchbot_msgs::SegmentImages segment_msg;
 
     // Setup Image message components
     sensor_msgs::ImagePtr label_ros =
