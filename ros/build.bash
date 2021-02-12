@@ -60,7 +60,7 @@ catkin config \
     --isolate-devel \
     --no-extend
 
-catkin build 
+catkin build
 
 # Put everything into our completed build directory
 popd
