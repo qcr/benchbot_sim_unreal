@@ -54,4 +54,4 @@ fi
 
 # Run Bazel exactly like normal with all of the arguments passed in
 echo -e "\nROS_BUILD_VALID: ROS build is up to date. Moving on...\n"
-"$BAZEL" "$@"
+"$BAZEL" "$@" --action_env=BENCHBOT_MSGS_HASH="${BENCHBOT_MSGS_HASH:-}"
