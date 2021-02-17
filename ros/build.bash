@@ -10,6 +10,9 @@ ROS_OUT_LIST="$(realpath "$2")"
 ROS_OUT_DIR=$(dirname "$ROS_OUT_LIST")
 ROS_CP_DIR="$(realpath "$3")"
 
+BENCHBOT_MSGS_HASH_DEFAULT='master'
+BENCHBOT_MSGS_LOCATION='src/benchbot_msgs'
+
 echo "Loading packages from: $PACKAGE_FILE"
 echo "Building in: $ROS_OUT_DIR"
 echo "Saving files list: $ROS_OUT_LIST"
@@ -36,6 +39,16 @@ rosinstall_generator \
     --flat \
     $packages > ws.rosinstall
 wstool init -j8 src ws.rosinstall
+
+if [ -z "$BENCHBOT_MSGS_HASH" ]; then
+  echo "No 'benchbot_msgs' HASH provided, reverting to default ('$BENCHBOT_MSGS_HASH_DEFAULT')"
+  BENCHBOT_MSGS_HASH="$BENCHBOT_MSGS_HASH_DEFAULT"
+fi
+echo "Using 'benchbot_msgs' commitish: $BENCHBOT_MSGS_HASH"
+git clone https://github.com/qcr/benchbot_msgs.git "$BENCHBOT_MSGS_LOCATION"
+pushd "$BENCHBOT_MSGS_LOCATION"
+git checkout "$BENCHBOT_MSGS_HASH"
+popd
 
 catkin config \
     --install \

@@ -44,7 +44,7 @@ if ! is_ros_built "$built_package_list" "$REQUIRED_PACKAGE_LIST"; then
   echo -e "\t./${REQUIRED_PACKAGE_LIST}"
   echo -e "\t${built_package_list}"
   echo -e "\nROS_BUILD_OUTDATED: Using bazel to rebuild ROS packages...\n"
-  "$BAZEL" build "$ROS_BUILD_TARGET"
+  "$BAZEL" build "$ROS_BUILD_TARGET" --action_env=BENCHBOT_MSGS_HASH="${BENCHBOT_MSGS_HASH:-}"
   if ! is_ros_built "$built_package_list" "$REQUIRED_PACKAGE_LIST"; then
     echo -e "\nROS_BUILD_OUTDATED: required & built package lists still do not match"
     echo "ROS_BUILD_OUTDATED: Building of ROS failed. Exiting"
@@ -54,4 +54,4 @@ fi
 
 # Run Bazel exactly like normal with all of the arguments passed in
 echo -e "\nROS_BUILD_VALID: ROS build is up to date. Moving on...\n"
-"$BAZEL" "$@"
+"$BAZEL" "$@" 
