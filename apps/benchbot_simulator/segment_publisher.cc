@@ -87,23 +87,13 @@ void SegmentPublisher::tick() {
 
     // Attempt to get image data out of the message
     auto segment_proto = rx_camera_segment().getProto();
-
-    // HACK trying to get class_ids set in stone assuming they will never change the list
-    if (class_ids_.empty()){
-      for (auto label_proto : segment_proto.getLabels())
-        {
-          class_ids_.push_back(label_proto.getIndex()+1);
-          class_inst_ids_.push_back(std::vector<uint16_t> (1,0));
-          class_inst_ids_.back().pop_back();
-        }
-    }
-
-
+ 
     isaac::ImageConstView1ub label_isaac;
     if (!FromProto(segment_proto.getLabelImage(), rx_camera_segment().buffers(),
                    label_isaac)) {
       LOG_ERROR("Failed to get label image from the proto");
     };
+    
     // NOTE I am not certain if a different buffer is needed for instance and
     // label images
     isaac::ImageConstView1ui16 instance_isaac;
@@ -127,9 +117,6 @@ void SegmentPublisher::tick() {
     cv::Mat instance_cv = cv::Mat::zeros(instance_cv_original.rows,
                                          instance_cv_original.cols, CV_16UC1);
     auto instance_ids_original = unique<uint16_t>(instance_cv_original.clone());
-    // auto class_ids = unique<uint8_t>(label_cv.clone());
-    // Keep track of number of instances of each class
-    // std::vector<int> class_inst_counts(class_ids.size(), 0);
 
     // Go through all instance ids in the original
     for (auto inst_id = instance_ids_original.begin();
@@ -151,20 +138,10 @@ void SegmentPublisher::tick() {
              cls_id != masked_class_ids.end(); ++cls_id) {
           // Skip class id 0 (unlabelled)
           if ((uint16_t)*cls_id > 0) {
-            // Increase count of instances for given class by 1
-            int cls_count_idx = std::distance(class_ids_.begin(),
-              std::find(class_ids_.begin(), class_ids_.end(), *cls_id));
-
-            if (std::find(class_inst_ids_[cls_count_idx].begin(),
-                 class_inst_ids_[cls_count_idx].end(), *inst_id) == class_inst_ids_[cls_count_idx].end())
-            {
-              class_inst_ids_[cls_count_idx].push_back(*inst_id);
-            }
-
+            
             // Define new instance id
-            uint16_t new_inst_id = (uint16_t)*cls_id * 1000 + 1 + std::distance(class_inst_ids_[cls_count_idx].begin(),
-              std::find(class_inst_ids_[cls_count_idx].begin(),
-              class_inst_ids_[cls_count_idx].end(), *inst_id));
+            // NOTE using the instance ID from the original image here. No check for if instances goes above 999.
+            uint16_t new_inst_id = (uint16_t)*cls_id * 1000 + *inst_id;
 
             // Define the mask for the instance
             cv::Mat cls_inst_mask;
