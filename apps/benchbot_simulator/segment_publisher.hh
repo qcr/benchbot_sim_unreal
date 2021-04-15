@@ -30,6 +30,8 @@ class SegmentPublisher : public isaac::alice::Codelet {
  private:
   struct RosData;
   std::unique_ptr<RosData> ros_data_;
+  std::vector<uint16_t> class_ids_;
+  std::vector<std::vector<uint16_t>> class_inst_ids_;
 };
 
 }  // namespace benchbot

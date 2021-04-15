@@ -87,12 +87,13 @@ void SegmentPublisher::tick() {
 
     // Attempt to get image data out of the message
     auto segment_proto = rx_camera_segment().getProto();
-
+ 
     isaac::ImageConstView1ub label_isaac;
     if (!FromProto(segment_proto.getLabelImage(), rx_camera_segment().buffers(),
                    label_isaac)) {
       LOG_ERROR("Failed to get label image from the proto");
     };
+    
     // NOTE I am not certain if a different buffer is needed for instance and
     // label images
     isaac::ImageConstView1ui16 instance_isaac;
@@ -116,9 +117,6 @@ void SegmentPublisher::tick() {
     cv::Mat instance_cv = cv::Mat::zeros(instance_cv_original.rows,
                                          instance_cv_original.cols, CV_16UC1);
     auto instance_ids_original = unique<uint16_t>(instance_cv_original.clone());
-    auto class_ids = unique<uint8_t>(label_cv.clone());
-    // Keep track of number of instances of each class
-    std::vector<int> class_inst_counts(class_ids.size(), 0);
 
     // Go through all instance ids in the original
     for (auto inst_id = instance_ids_original.begin();
@@ -140,16 +138,10 @@ void SegmentPublisher::tick() {
              cls_id != masked_class_ids.end(); ++cls_id) {
           // Skip class id 0 (unlabelled)
           if ((uint16_t)*cls_id > 0) {
-            // Increase count of instances for given class by 1
-            int cls_count_idx = std::distance(
-                class_ids.begin(),
-                std::find(class_ids.begin(), class_ids.end(), *cls_id));
-
-            class_inst_counts[cls_count_idx]++;
-
+            
             // Define new instance id
-            uint16_t new_inst_id =
-                (uint16_t)*cls_id * 1000 + class_inst_counts[cls_count_idx];
+            // NOTE using the instance ID from the original image here. No check for if instances goes above 999.
+            uint16_t new_inst_id = (uint16_t)*cls_id * 1000 + *inst_id;
 
             // Define the mask for the instance
             cv::Mat cls_inst_mask;
