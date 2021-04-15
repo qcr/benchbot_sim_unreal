@@ -2,6 +2,11 @@
 
 # BenchBot Simulator
 
+[![BenchBot project](https://img.shields.io/badge/collection-BenchBot-%231a2857)](http://benchbot.org)
+[![QUT Centre for Robotics Open Source](https://github.com/qcr/qcr.github.io/raw/master/misc/badge.svg)](https://qcr.github.io)
+![Primary language](https://img.shields.io/github/languages/top/qcr/benchbot_simulator)
+[![License](https://img.shields.io/github/license/qcr/benchbot_simulator)](./LICENSE.txt)
+
 ![benchbot_simulator](./docs/benchbot_simulator.gif)
 
 The BenchBot Simulator is an extension of the [NVIDIA Isaac SDK](https://developer.nvidia.com/isaac-sdk) that establishes ROS communications to a running instance of an Unreal Engine-based [NVIDIA Isaac SIM](https://developer.nvidia.com/isaac-sim). BenchBot simulator is explicitly linked to version 2019.2 of Isaac, the last version with direct support for the Unreal Engine-based simulator. In the future we intend to move to [Omniverse](https://developer.nvidia.com/nvidia-omniverse), NVIDIA's new 3D production pipeline with RTX support.
