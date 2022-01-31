@@ -1,6 +1,6 @@
 **NOTE: this simulator is retired. It was based on Isaac Sim 2019.2, which used Unreal Engine. We have migrated to the new Omniverse-powered Isaac Sim. See [benchbot_sim_omni](https://github.com/qcr/benchbot_sim_omni) for details.**
 
-# BenchBot Simulator (retired!)
+# BenchBot Simulator for Unreal-powered Isaac Sim (2019.2) - retired!
 
 [![BenchBot project](https://img.shields.io/badge/collection-BenchBot-%231a2857)](http://benchbot.org)
 [![QUT Centre for Robotics Open Source](https://github.com/qcr/qcr.github.io/raw/master/misc/badge.svg)](https://qcr.github.io)
