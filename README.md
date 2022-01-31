@@ -1,6 +1,6 @@
-**NOTE: this software is part of the BenchBot software stack, and not intended to be run in isolation. For a working BenchBot system, please install the BenchBot software stack by following the instructions [here](https://github.com/qcr/benchbot).**
+**NOTE: this simulator is retired. It was based on Isaac Sim 2019.2, which used Unreal Engine. We have migrated to the new Omniverse-powered Isaac Sim. See [benchbot_sim_omni](https://github.com/qcr/benchbot_sim_omni) for details.**
 
-# BenchBot Simulator
+# BenchBot Simulator (retired!)
 
 [![BenchBot project](https://img.shields.io/badge/collection-BenchBot-%231a2857)](http://benchbot.org)
 [![QUT Centre for Robotics Open Source](https://github.com/qcr/qcr.github.io/raw/master/misc/badge.svg)](https://qcr.github.io)
