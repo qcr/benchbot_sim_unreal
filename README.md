@@ -4,8 +4,8 @@
 
 [![BenchBot project](https://img.shields.io/badge/collection-BenchBot-%231a2857)](http://benchbot.org)
 [![QUT Centre for Robotics Open Source](https://github.com/qcr/qcr.github.io/raw/master/misc/badge.svg)](https://qcr.github.io)
-![Primary language](https://img.shields.io/github/languages/top/qcr/benchbot_simulator)
-[![License](https://img.shields.io/github/license/qcr/benchbot_simulator)](./LICENSE.txt)
+![Primary language](https://img.shields.io/github/languages/top/qcr/benchbot_sim_unreal)
+[![License](https://img.shields.io/github/license/qcr/benchbot_sim_unreal)](./LICENSE.txt)
 
 ![benchbot_simulator](./docs/benchbot_simulator.gif)
 
